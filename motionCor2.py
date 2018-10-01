@@ -1,12 +1,14 @@
 
 import subprocess as subp
 import ipywidgets as widgets
-from ipywidgets import HBox, VBox, Label
+from ipywidgets import HBox, VBox, Label, Layout
+import dicttoxml
 
 style = {'description_width': 'initial'}
 
 #Input Widgets
 inMrc = widgets.Text(
+    value='/home/jvanschy/br76_scratch/relion21_tutorial/betagal/Micrographs/',
     placeholder='path for input MCR file or folder containing MRC files',
     description='Input: ',
     disabled=False,
@@ -19,6 +21,7 @@ inTiff = widgets.Text(
     style=style)
 
 outMrc = widgets.Text(
+    value='/home/jvanschy/br76_scratch/relion21_tutorial/betagal/JayMotionCorr/',
     placeholder='path for output MCR file',
     description='Output: ',
     disabled=False,
@@ -206,22 +209,66 @@ args = widgets.Textarea(
     description_tooltip='Arguments',
     disabled=False,
     rows=20,
-    style=style)
+    style=style,
+    layout=Layout(width='90%'))
 
 stdout = widgets.Textarea(
     description='Standard output',
     description_tooltip='Standard output',
     disabled=False,
     rows=20,
-    style=style)
+    style=style,
+    layout=Layout(width='90%'))
 
 stderr = widgets.Textarea(
     description='Standard Error',
     description_tooltip='Standard Error output',
     disabled=False,
     rows=20,
-    style=style
-    )
+    style=style,
+    layout=Layout(width='90%'))
+
+#Jobs Widgets
+existingJobs = [('Job1 | value 1'), ('Job2 | value 2'), ('Job3 | value 3'), ('Job3 | value4')]
+saveJobs = [('')]
+
+jobsList = widgets.SelectMultiple(
+    description='Jobs: ', 
+    options=existingJobs, 
+    disabled=False, 
+    style={'description_width': 'initial'}, 
+    rows=10, 
+    layout=Layout(width='90%'))
+
+add = widgets.Button(
+    description='Add', 
+    disabled=False, 
+    button_style='', 
+    tooltip='Add job')
+
+delete = widgets.Button(
+    description='Delete', 
+    disabled=False, 
+    button_style='',
+    tooltip='Delete job(s)')
+
+save = widgets.Button(
+    description='Save', 
+    disabled=False, 
+    button_style='', 
+    tooltip='Save job(s)')
+
+load = widgets.Button(
+    description='Load', 
+    disabled=False, 
+    button_style='', 
+    tooltip='Load job(s)')
+
+run = widgets.Button(
+    description='Run', 
+    disabled=False, 
+    button_style='', 
+    tooltip='Run all jobs')
 
 #Build the input widgets
 def buildInputWidgets():
@@ -306,10 +353,8 @@ def buildArgumentsList():
     if  group.value > 0:
         args += " -Group " + str(group.value)
     
-
     return args
     
-
 def call_motioncor2(b):
     
     #Clear output from previous run
@@ -321,15 +366,23 @@ def call_motioncor2(b):
     #Note: shell=True. There are security implications for this. This was enabled as the arguments were not
     #being passed in to motioncor2 for some reason. Unable to determine why.
     #response = subp.run(["motioncor2 ",  buildArgumentsList()], stdout=subp.PIPE, stderr=subp.PIPE)
-    try:
-        response = subp.run("motioncor2 " + buildArgumentsList(), shell=True, stdout=subp.PIPE, stderr=subp.PIPE)
-    except sp.TimeoutExpired:
-        stderr.value = 'Call timed out!'
-    except sp.SubprocessError:
-        stderr.value = 'Subprocess Error!'
-        
-    stdout.value = response.stdout
-    stderr.value = response.stderr
+    #try:
+    #response = subp.run("motioncor2 " + buildArgumentsList(), shell=True, stdout=subp.PIPE, stderr=subp.PIPE)
+    response = subp.Popen("motioncor2 " + buildArgumentsList(), shell=True, stdout=subp.PIPE, stderr=subp.PIPE)
+    #except sp.TimeoutExpired:
+    #    stderr.value = 'Call timed out!'
+    #except sp.SubprocessError:
+    #    stderr.value = 'Subprocess Error!'
+
+    while True:
+        output = response.stdout.readline().decode()
+        if  output == '' and response.poll() is not None:
+            break
+        if  output:
+            stdout.value = stdout.value + output
+    
+    #stdout.value = response.stdout
+    #stderr.value = response.stderr
     args.value = buildArgumentsList()
 
 def buildOutputWidgets():
@@ -343,5 +396,80 @@ def buildOutputWidgets():
     runMotionCor2.on_click(call_motioncor2)
 
     display(runMotionCor2)
-    outputs = HBox([stdout, stderr, args])
-    display(outputs)
+    organiseOutputs = VBox([stdout, stderr, args])
+    display(organiseOutputs)
+
+#Jobs widget supporting functions.
+def buildNewJob():
+    newJob = {"inMrc":inMrc.value}
+    newJob['inTiff']        = inTiff.value
+    newJob['outMrc']        = outMrc.value
+    newJob['fullSum']       = fullSum.value
+    newJob['defectFile']    = defectFile.value
+    newJob['processing']    = processing.value
+    newJob['gainFile']      = gainFile.value
+    newJob['patch']         = patch.value
+    newJob['iteration']     = iteration.value
+    newJob['tolerance']     = tolerance.value   
+    newJob['bFactor']       = bFactor.value 
+    newJob['stack']         = stack.value
+    newJob['binningFactor'] = binningFactor.value   
+    newJob['initDose']      = initDose.value   
+    newJob['frameDose']     = frameDose.value   
+    newJob['pixelSize']     = pixelSize.value   
+    newJob['voltage']       = voltage.value   
+    newJob['throw']         = throw.value   
+    newJob['trunc']         = trunc.value   
+    newJob['group']         = group.value   
+    newJob['tilt']          = tilt.value   
+    newJob['rotGain']       = rotGain.value   
+    newJob['flipGain']      = flipGain.value
+    newJob['gpu']           = gpu.value
+    newJobXML = dicttoxml.dicttoxml(newJob, attr_type=False, root=False)
+    return newJobXML
+
+def addJob(b):
+    listedJobs = jobsList.options
+    listedJobsList = list(listedJobs)
+    newJob = buildNewJob()
+    #converting to tuple
+    newJobTuple = (newJob,)
+    listedJobsList.extend(newJobTuple)
+    jobsList.options = listedJobsList
+
+def deleteJob(b):
+    #obtain the listedJobs
+    listedJobs = jobsList.options
+    listedJobsList = list(listedJobs)
+    #obtain the selectedJobs
+    selectedJobs = jobsList.value
+    selectedJobsList = list(selectedJobs)
+    #remove selected jobs
+    for i in range(len(selectedJobsList)):
+        listedJobsList.remove(selectedJobsList[i])
+    #update 
+    jobsList.options = listedJobsList
+
+def saveJobs(b):
+    listedJobs = jobsList.options
+    saveJobs = list(listedJobs)
+    #store the variable in the IPython database.
+    #%store saveJobs
+
+def loadJobs(b):
+    #restore all saved variables from the IPython database.
+    #%store -r 
+    #update the screen
+    jobsList.options = saveJobs
+    
+def buildJobsWidgets():
+    buttons = HBox([add, delete, save, load, run])
+    selectableTable = VBox([jobsList, buttons])
+    
+    #Add fuctions to buttons.
+    add.on_click(addJob)
+    delete.on_click(deleteJob)
+    save.on_click(saveJobs)
+    load.on_click(loadJobs)
+
+    display(selectableTable)
