@@ -50,8 +50,7 @@ If you have previously installed, please see 'Running' below.
 
   ![Image of Jupyter Lab](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/selectCryoEm-Processing.png)
 
-8. Double click on CryoEmProcTool.ipynb
-   You should now see the notebook.
+8. Double click on 'CryoEmProcTool.ipynb', you should now see the notebook.
 
   ![Image of open CryoEmProcTool.ipynb](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/openCryoEmProcTool.png)
 
@@ -70,9 +69,9 @@ Ensure your Massive Desktop is running.
 
 1. Activate the Virtual environment
 
-   ```
-   source CryoEm-Processing/bin/Activate
-   ```
+  ```
+  source CryoEm-Processing/bin/Activate
+  ```
 
 2. Load the required HPC modules:
 
