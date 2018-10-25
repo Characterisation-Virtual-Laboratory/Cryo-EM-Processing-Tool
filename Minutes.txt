@@ -9,18 +9,37 @@ Details:
    The main fields used to vary Motioncor2 runs are:
        PixelSize, Patches, BFactor, Voltage, GainFile, GPU
    Hide the other fields on a tab so they are still accessable.
-   
-   
+
+
    Hari is running some software called Warp in a Windows machine.
    Switching between the Windows and M3 is making the workflow messy.
-   
+
 Actions:
-   Jay: Can Warp be run on M3 ? 
+   Jay: Can Warp be run on M3 ?
      http://www.warpem.com
      Warp has been written in C#. After reading the website, the WARP backend could thoeretically be compiled on Linux,
      however the front end is not supported due to Windows C++ library dependencies.
-   
+
    Jay: continue working on the notebook.
-   
-    
-    
+
+15-10-2017
+Where: Jay's Desk.
+Who: Hari, George, Jay
+
+Details: Discussed the questions document created by George, Jay.
+  Outcomes are described in the document.
+  Agreed to meet again to continue discussion document questions.
+  Refer to Google Doc for details
+
+Actions: Jay to continue progressing the Notebook development using feedback
+stored in the document.
+
+18-10-2017
+  Where: eResearch Meeting room (Orange).
+  Who: Hari,  Jay
+
+Details: Further discussion of document/requirements.
+    Outcomes are described in the document.
+
+Actions: Jay to continue progressing the Notebook development using feedback
+stored in the document.
