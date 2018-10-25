@@ -1,11 +1,12 @@
 # Installation
 
-This tool has been developed for deployment on Massive. https://massive.org.au/ and runs as a Jupyter Lab.
+This tool has been developed for deployment on Massive (https://massive.org.au) and runs as a Jupyter Lab.
 
-Start your Desktop on Massive. An 'Advanced' Desktop is recommended to gain suitable GPU performance.  
+Start your Desktop on Massive. 
+An 'Advanced' Desktop is recommended to gain suitable GPU performance.  
 For help please refer to: https://docs.massive.org.au/M3/connecting/connecting-via-strudel.html
 
-If you have previously installed, please [Running](#Running) below.
+If you have previously installed, please see 'Running' below.
 
 1. Clone the GitHub Repository
 
@@ -56,30 +57,33 @@ If you have previously installed, please [Running](#Running) below.
 
 9. Press Shift+Enter 3 times to execute the notebook.
 
-  ![Image of Notebook](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/excuteNotebook.png)
+  ![Image of Notebook](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/executeNotebook.png)
 
 10. The CryoEm Processing Tool is now ready.
 
   ![Image of CryoEmProcTool](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/readyForProcessing.png)
 
-# <a name="Running"></a> Running
+# Running
 
+Follow these instructions if you have previously installed. 
 Ensure your Massive Desktop is running.
 
-1. Setup a python3 Virtual Environment.
-
-   ```
-   /usr/local/python/3.6.2-static/bin/python3 -m venv CryoEm-Processing
-   ```
-
-2. Activate the Virtual environment
+1. Activate the Virtual environment
 
    ```
    source CryoEm-Processing/bin/Activate
    ```
 
+2. Load the required HPC modules:
+
+  ```
+  module load motioncor2/2.1
+  module load gctf/1.18_cuda8
+  module load gautomatch/0.56
+  ```
+
 3. Start the Jupyter Notebook.
 
- ```
- jupyter lab
- ```
+  ```
+  jupyter lab
+  ```
