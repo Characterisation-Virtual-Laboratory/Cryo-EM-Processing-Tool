@@ -47,24 +47,20 @@ If you have previously installed, please [Running](#Running) below.
 
 7. Inside Jupyter Lab, open the CryoEm-Processing folder.
 
-  ![Image of Jupyter Lab]
-  (images/selectCryoEm-Processing.png)
+  ![Image of Jupyter Lab](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/selectCryoEm-Processing.png)
 
 8. Double click on CryoEmProcTool.ipynb
    You should now see the notebook.
 
-  ![Image of open CryoEmProcTool.ipynb]
-  (images/openCryoEmProcTool.png)
+  ![Image of open CryoEmProcTool.ipynb](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/openCryoEmProcTool.png)
 
 9. Press Shift+Enter 3 times to execute the notebook.
 
-  ![Image of Executing the notebook]
-  (images/excuteNotebook.png)
+  ![Image of Notebook](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/excuteNotebook.png)
 
 10. The CryoEm Processing Tool is now ready.
 
-  ![Image of CryoEmProcTool]
-  (images/excuteNotebook.png)
+  ![Image of CryoEmProcTool](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/readyForProcessing.png)
 
 # <a name="Running"></a> Running
 
