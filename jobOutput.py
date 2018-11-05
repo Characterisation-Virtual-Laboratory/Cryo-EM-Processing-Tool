@@ -49,6 +49,7 @@ class jobOutput:
 
     # saveOutput() - write to disk the stdout, stderr and args values used in
     #                 calling the 'program'.
+    #                 Files are written to in append mode. This caters for both 'single' and 'workflow' modes
     #    Arguments:
     #        program   - the executable
     #        folder    - destination of output
@@ -57,19 +58,32 @@ class jobOutput:
         outputFilename = program + "-output.txt"
         argsFilename   = program + "-arguments.txt"
         errorFilename  = program + "-error.txt"
+        
+        try:
+            fOutput = open(folder + outputFilename, "a")
+            fOutput.write(self.stdout.value + '\n\n')
+        except OSError as err:
+            self.stderr.value = "Error writing Job Output: {0}".format(err)
+        else:
+            fOutput.close()
 
-        fOutput = open(folder + outputFilename, "w")
-        fOutput.write(self.stdout.value)
-        fOutput.close()
+        try:
+            fArgs = open(folder + argsFilename, "a")
+            fArgs.write(self.argsOutput.value + '\n\n')
+        except OSError as err:
+            self.stderr.value = "Error writing Job Arguments: {0}".format(err)
+        else:
+            fArgs.close()
 
-        fArgs = open(folder + argsFilename, "w")
-        fArgs.write(self.argsOutput.value)
-        fArgs.close()
-
-        fError = open(folder + errorFilename, "w")
-        fError.write(self.stderr.value)
-        fError.close()
-
+        try:
+            fError = open(folder + errorFilename, "a")
+            fError.write(self.stderr.value + '\n\n')
+        except OSError as err:
+            self.stderr.value = "Error writing Job Errors: {0}".format(err)
+        else:
+            fError.close()
+            
+            
     # call_program() - executes the 'program', populates stdout, stderr and args 
     #                   screen fields.
     #    Arguments:
@@ -82,20 +96,17 @@ class jobOutput:
         self.stdout.value = ''
         self.stderr.value = ''
         self.argsOutput.value = ''
-
+        
         if  program is not None:
-            #clear stdout, args , stderr
-            self.stdout.value = ""
-            self.argsOutput.value = ""
 
             #Calling program
             #Note: shell=True. There are security implications for this. This was enabled as the arguments were not
             #being passed in.
-
-            #try:
-            response = subp.Popen(program + arguments, shell=True, stdout=subp.PIPE, stderr=subp.PIPE)
-            #except sp.TimeoutExpired:
-            #    stderr.value = 'Call timed out!'
+            try:
+                response = subp.Popen(program + arguments, shell=True, stdout=subp.PIPE, stderr=subp.PIPE)
+                
+            except subp.SubprocessError as err:
+                self.stderr.value += 'Subprocess error: {0}'.format(err) + '\n'
 
             while True:
                 output = response.stdout.readline().decode()
@@ -110,9 +121,14 @@ class jobOutput:
                     break
                 if  error:
                     self.stderr.value = self.stderr.value + error
-                    
+
+            #Add return code to stderr as Gctf and Gautomatch do not finsh cleanly when files not found
+            self.stderr.value += "ReturnCode: " + str(response.returncode) + '\n'
+            
             self.argsOutput.value = arguments
-            self.saveOutput(program, outputFolder)
+            
+            if  outputFolder:
+                self.saveOutput(program, outputFolder)
             
     # buildOutputWidgets() - write all output fields to the screen.
     def buildOutputWidgets(self):
@@ -121,4 +137,4 @@ class jobOutput:
             display(self.debug)
 
         organiseOutputs = VBox([self.stdout, self.stderr, self.argsOutput])
-        display(organiseOutputs)
+        display(organiseOutputs)          

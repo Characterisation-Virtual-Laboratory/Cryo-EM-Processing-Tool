@@ -1,4 +1,5 @@
-import subprocess as subp
+import os
+import glob
 import ipywidgets as widgets
 from ipywidgets import HBox, VBox, Box, Label, Layout
 
@@ -8,6 +9,8 @@ class motionCorrection:
     #Settings:
     program = 'motioncor2'
     jobPrefix = 'mc'
+    #used to strip the micrograph filename to build output filename prefix
+    stripOutputName = ['Micrographs/', '_movies.mrcs']
     header = [("Job# | inMrc | outMrc | pixelSize | patch | bFactor | voltage | gainFile |  gpu | inTiff | fullSum | defectFile | processing | iteration | tolerance | stack | binningFactor | initDose | frameDose | throw | trunc | group | fmRef | tilt | rotGain | flipGain |")]    
     
     #style and Layout
@@ -25,7 +28,7 @@ class motionCorrection:
 
     inMrc = widgets.Text(
         value='',
-        placeholder='path for input MCR file or folder containing MRC files',
+        placeholder='mrc file, folder containing mrc files or .star file',
         description='Input: ',
         disabled=False,
         style=styleBasic,
@@ -33,14 +36,14 @@ class motionCorrection:
 
     outMrc = widgets.Text(
         value='',
-        placeholder='path for output MCR file',
+        placeholder='path for output mrc file',
         description='Output: ',
         disabled=False,
         style=styleBasic,
         layout=basicLayout)
 
     gainFile = widgets.Text(
-        placeholder='path for MRC file that stores the gain reference',
+        placeholder='path for mrc file that stores the gain reference',
         description='Gain: ',
         disabled=False,
         style=styleBasic,
@@ -340,10 +343,19 @@ class motionCorrection:
     ## Job Maintenance fields
     #      
 
+    errorText = widgets.Textarea(
+        description='',
+        description_tooltip='Error messages',
+        placeholder='Errors',
+        disabled=True,
+        rows=1,
+        style=styleBasic,
+        layout=basicLayout)    
+    
     ##Debug assistance
     debug = widgets.Textarea(
         description='Debugging:',
-        description_tooltip='Standard output',
+        description_tooltip='Debugging output',
         disabled=False,
         rows=10,
         style=styleBasic,
@@ -358,17 +370,22 @@ class motionCorrection:
         self.callProgram = callProgramFunc
         self.showDebug = showDebug
     
-    #Single Job run support
+    # runSingleJob() - execute a single job
+    #
     def runSingleJob(self, target):
-        #self.callProgram(self.program, arguments, self.outMrc.value)
-        self.callProgram(self.program, self.buildArgumentsList(self.buildJob('', '', self.jobNumber)), self.outMrc.value) 
+        self.runProgress.max = 2
+        self.runProgress.value = 1
+        self.callProgram(self.program, self.buildArgumentsList(self.buildJob('', '', self.jobNumber), '', ''), self.outMrc.value) 
+        self.runProgress.value = self.runProgress.max
     
     #Multi value field processing support
     # addPatchJobs() - add new jobs for all 'Patch' values entered
+    #
     def addPatchJobs(self, target):
         self.addJobs("patch", self.patchMulti.value)
 
     # addBFactorJobs() - add new jobs for all 'BFactor' values entered.
+    #
     def addBFactorJobs(self, target):
         self.addJobs("bFactor", self.bFactorMulti.value)
 
@@ -438,8 +455,6 @@ class motionCorrection:
                 if  fieldName == 'bFactor':
                     newJob = self.buildJob('', fieldCleaned, self.jobCounter)
 
-                self.debug.value = self.debug.value + "newJob: " + str(newJob) + "\n"
-                
                 self.jobCounter = self.jobCounter + 1
                 jobList.append(newJob)                    
 
@@ -532,16 +547,27 @@ class motionCorrection:
     # buildArgumentsList() - builds a string of arguments for calling Motion Correction.
     #    Arguments:
     #        jobToProcess - a dict containing all screen values.
-    #
-    def buildArgumentsList(self, jobToProcess):
+    #        inputFile - full path for file to process. Required when processing 
+    #                    *.star file in 'Workflow' mode
+    #        prefixName - prefix used to create the output file. Required for 'Workflow'
+    #                     mode.
+    def buildArgumentsList(self, jobToProcess, inputFile, prefixName):
         args = ''
 
-        if  jobToProcess['inMrc'] is not '':
+        if  inputFile:
+            args += " -InMrc " + inputFile
+        elif jobToProcess['inMrc'] is not '':
             args += " -InMrc " + jobToProcess['inMrc']
+
         if  jobToProcess['inTiff'] is not '':
             args += " -InTiff " + jobToProcess['inTiff']
-        if  jobToProcess['outMrc'] is not '':
+
+        #inputFile is populated, so we are in 'Workflow' mode
+        if  inputFile:
+            args += " -OutMrc " + jobToProcess['outMrc'] + jobToProcess['jobNumber'] + '/Micrographs/' + prefixName
+        elif  jobToProcess['outMrc'] is not '':
             args += " -OutMrc " + jobToProcess['outMrc']
+
         if  jobToProcess['fullSum'] is not '':
             args += " -FullSum " + jobToProcess['fullSum']
         if  jobToProcess['defectFile'] is not '':
@@ -623,7 +649,94 @@ class motionCorrection:
         self.jobsList.options = listedJobsList
         self.jobNumber.value = ''
 
+    # loadMicrographs() - read the star file to obtain a list of micrographs
+    #                      processing
+    #    Arguments:
+    #         projectDirectory - contains the home directory for the Relion project
+    #         starFilePath     - the relative path to the star file
+    #    Return:
+    #         a list of micrographs.
+    #
+    def loadMicrographs(self, projectDirectory, starFilePath):
+        foundDataBlock = False
+        foundLoopBlock = False
+        foundColumns   = False
+        micrographs = []
+        
+        #open *.star file and read micrographs into list.
+        fileFullPath = projectDirectory + starFilePath
+        
+        try:
+            with open(fileFullPath, 'r') as filehandle: 
+                for line in filehandle:
+                    if  line.startswith('data_'):
+                        foundDataBlock = True
+                    elif line.startswith('loop_'):
+                        foundLoopBlock = True
+                    elif line.startswith('_rln'):
+                        foundColumns = True
+                    elif foundDataBlock and foundLoopBlock and foundColumns:
+                        #right strip newlines chars then add to list.
+                        micrographs.append(line.rstrip())
+        except OSError as err:
+            self.errorText.value += "Unable to load Micrographs: {0}".format(err) + '\n'
+        else:
+            filehandle.close()            
+
+        return micrographs
+    
+    # runAllWorkflowJobs() - execute all jobs in the list. Only executed in 'workflow' mode
+    #    Arguments:
+    #        projectDirectory  - contains the home directory of the Relion project for all jobs.
+    #
+    def runAllWorkflowJobs(self, projectDirectory):
+        #obtain the listedJobs
+        listedJobs = self.jobsList.options
+        listedJobsList = list(listedJobs)
+
+        self.runProgress.max = len(listedJobsList)
+
+        if  projectDirectory.endswith('/') == False:
+            projectDirectory += '/'
+            
+        #Run each job, but not the Header row.
+        for i in range(len(listedJobsList)):
+            #setting progress bar to show job has started running.
+            if  (str(listedJobsList[i]).startswith('Job#') == True):
+                self.runProgress.value = i+1    
+
+            if  (str(listedJobsList[i]).startswith('Job#') == False):
+                #'Workflow' mode
+                micrographs = self.loadMicrographs(projectDirectory, listedJobsList[i]['inMrc'])
+
+                outputFolder = projectDirectory + listedJobsList[i]['outMrc'] + listedJobsList[i]['jobNumber'] + '/Micrographs/'
+                try:
+                    #mkdir -p path, if folder exists, that's OK
+                    os.makedirs(outputFolder, exist_ok=True)
+
+                    #change working directory
+                    os.chdir(projectDirectory)
+                except OSError as err:
+                    self.errorText.value += "Unable to build folder: {0}".format(err) + '\n'                 
+                else:    
+                    #run for each micrograph in .star file
+                    for j in range(len(micrographs)):
+                        #determine output filename prefix.
+                        prefix = micrographs[j].rstrip(self.stripOutputName[1])
+                        prefix = prefix.lstrip(self.stripOutputName[0])
+
+                        #already processed ?
+                        if  glob.glob(outputFolder + '/' + prefix + '*'): 
+                            continue
+                        else:
+                            #build arguments list, run program
+                            self.callProgram(self.program, self.buildArgumentsList(listedJobsList[i], micrographs[j], prefix), 
+                                             outputFolder)
+
+                    self.runProgress.value = i+1    
+
     # runAllJobs() - execute all jobs in the list.
+    #    target - not used, exists to make to make the button call work.
     #
     def runAllJobs(self, target):
         #obtain the listedJobs
@@ -639,7 +752,7 @@ class motionCorrection:
                 self.runProgress.value = i+1    
 
             if  (str(listedJobsList[i]).startswith('Job#') == False):
-                self.callProgram(self.program, self.buildArgumentsList(listedJobsList[i]), listedJobsList[i]['outMrc'])
+                self.callProgram(self.program, self.buildArgumentsList(listedJobsList[i], '', ''), listedJobsList[i]['outMrc'])
                 self.runProgress.value = i+1    
 
     # selectJob() - update field values using the selected job in the job list
@@ -667,7 +780,6 @@ class motionCorrection:
             #skip checking the header
             if  (str(listedJobsList[i]).startswith('Job#') == False):
                 listedJobNo = listedJobsList[i]["jobNumber"]
-                self.debug.value = self.debug.value + 'listedJobNo: ' + str(listedJobNo) + '\n' 
                 if  listedJobNo == updateJobNo:
                     listedJobsList[i] = updatedJob
 
@@ -707,7 +819,7 @@ class motionCorrection:
         self.runAllButton.on_click(self.runAllJobs)
 
         buttons = HBox([self.addButton, self.deleteButton, self.selectButton, self.updateButton, self.runAllButton, self.runProgress])
-        selectableTable = VBox([self.jobsList, buttons])
+        selectableTable = VBox([self.jobsList, buttons, self.errorText])
 
         inputWidgets = self.buildInputWidgets()
 

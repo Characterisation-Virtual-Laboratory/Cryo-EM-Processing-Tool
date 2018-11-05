@@ -1,4 +1,5 @@
-import subprocess as subp
+import os
+import glob
 import ipywidgets as widgets
 from ipywidgets import HBox, VBox, Box, Label, Layout
 
@@ -25,7 +26,7 @@ class autoPicking:
 
     inMrc = widgets.Text(
         value='',
-        placeholder='path for input MCR file or folder containing MRC files',
+        placeholder='path for input mrc file or folder containing mrc files',
         description='Input: ',
         disabled=False,
         style=styleBasic,
@@ -33,7 +34,7 @@ class autoPicking:
 
     outMrc = widgets.Text(
         value='',
-        placeholder='path for output MCR file',
+        placeholder='path for saving job output, errors and arguments',
         description='Output: ',
         disabled=False,
         style=styleBasic,
@@ -215,8 +216,8 @@ class autoPicking:
         layout=advLayout)
 
     doPreFilter = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Do Pre Filter: ',
         disabled=False,
         rows=2,
@@ -278,8 +279,8 @@ class autoPicking:
 
     #I/O Options
     writeCrossCorrelationMrcs = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Write Cross Correlation: ',
         disabled=False,
         rows=2,
@@ -287,8 +288,8 @@ class autoPicking:
         layout=advLayout)    
     
     writePhaseFlippedMrcs = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Write Phase Flipped: ',
         disabled=False,
         rows=2,
@@ -296,8 +297,8 @@ class autoPicking:
         layout=advLayout)    
     
     writePreFilteredMrcs = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Write Pre Filtered: ',
         disabled=False,
         rows=2,
@@ -305,8 +306,8 @@ class autoPicking:
         layout=advLayout)    
     
     writeEstBackgroundMrcs = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Write Est Background: ',
         disabled=False,
         rows=2,
@@ -314,8 +315,8 @@ class autoPicking:
         layout=advLayout)    
     
     writeBackgroundSubtractedMrcs = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Write Background Subtracted: ',
         disabled=False,
         rows=2,
@@ -323,8 +324,8 @@ class autoPicking:
         layout=advLayout)    
     
     writeLocalSigmaMrcs = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Write Local Sigma: ',
         disabled=False,
         rows=2,
@@ -332,8 +333,8 @@ class autoPicking:
         layout=advLayout)    
     
     writeAutoDetectedMask = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Write Auto Detected Mask: ',
         disabled=False,
         rows=2,
@@ -341,8 +342,8 @@ class autoPicking:
         layout=advLayout)    
     
     pickByPreDefinedCoords = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Exclusive Picking: ',
         disabled=False,
         rows=2,
@@ -357,8 +358,8 @@ class autoPicking:
         layout=advLayout) 
     
     maskExcludedCoords = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Mask Excluded Coords: ',
         disabled=False,
         rows=2,
@@ -373,8 +374,8 @@ class autoPicking:
         layout=advLayout) 
         
     doUnfinished = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='Yes',
+        options=[('No', '0'), ('Yes', '1')],
+        value='1',
         description='Autopick unfinished mrcs: ',
         disabled=False,
         rows=2,
@@ -382,8 +383,8 @@ class autoPicking:
         layout=advLayout)    
     
     dontInvertTemplateContrast = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description="Don't invert template contrast: ",
         disabled=False,
         rows=2,
@@ -391,8 +392,8 @@ class autoPicking:
         layout=advLayout)    
     
     extractRawParticle = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Extract particle from raw mrc: ',
         disabled=False,
         rows=2,
@@ -400,8 +401,8 @@ class autoPicking:
         layout=advLayout)    
     
     extractPhaseFlipped = widgets.Select(
-        options=[('No', 'No'), ('Yes', 'Yes')],
-        value='No',
+        options=[('No', '0'), ('Yes', '1')],
+        value='0',
         description='Extract particle from phase flipped mrc: ',
         disabled=False,
         rows=2,
@@ -472,6 +473,15 @@ class autoPicking:
     ## Job Maintenance fields
     #      
 
+    errorText = widgets.Textarea(
+        description='',
+        description_tooltip='Error messages',
+        placeholder='Errors',
+        disabled=True,
+        rows=1,
+        style=styleBasic,
+        layout=basicLayout)        
+    
     ##Debug assistance
     debug = widgets.Textarea(
         description='Debugging:',
@@ -490,9 +500,13 @@ class autoPicking:
         self.callProgram = callProgramFunc
         self.showDebug = showDebug
     
-    #Single Job run support
+    # runSingleJob() - execute single job
+    #
     def runSingleJob(self, target):
-        self.callProgram(self.program, self.buildArgumentsList(self.buildJob('', '', self.jobNumber)), self.outMrc.value) 
+        self.runProgress.max = 2
+        self.runProgress.value = 1        
+        self.callProgram(self.program, self.buildArgumentsList(self.buildJob('', '', self.jobNumber)), self.outMrc.value)
+        self.runProgress.value = self.runProgress.max
 
     """Determine range values for gautomatch        
     #Multi value field processing support
@@ -507,7 +521,7 @@ class autoPicking:
         self.addJobs("bFactor", self.bFactorMulti.value)
     """
 
-    # buildInputWidgets() - write all the Motion Correction input fields to the screen.
+    # buildInputWidgets() - write all the Auto Match input fields to the screen.
     #
     def buildInputWidgets(self):
         #linking button on_click to function    
@@ -589,12 +603,8 @@ class autoPicking:
         if  fieldName == 'bFactor':
             fieldList = self.bFactorMulti.value.split(";")
 
-        self.debug.value = self.debug.value + "fieldList: " + str(fieldList) + "\n"            
-            
         for i in range(len(fieldList)):
             fieldCleaned = fieldList[i].strip()
-            
-            self.debug.value = self.debug.value + "fieldCleaned: " + str(fieldCleaned) + "\n"  
             
             if  fieldCleaned:
                 if  fieldName == 'patch':
@@ -603,12 +613,9 @@ class autoPicking:
                 if  fieldName == 'bFactor':
                     newJob = self.buildJob('', fieldCleaned, self.jobCounter)
 
-                self.debug.value = self.debug.value + "newJob: " + str(newJob) + "\n"
-                
                 self.jobCounter = self.jobCounter + 1
                 jobList.append(newJob)                    
 
-        self.debug.value = self.debug.value + "jobList: " + str(jobList) + "\n"                
         return jobList
         
     # buildJob() - construct a single job containing all arguments.
@@ -769,8 +776,8 @@ class autoPicking:
             args += " --lp " + str(jobToProcess['lowPassFilter'])
         if  jobToProcess['highPassFilter']:
             args += " --hp " + str(jobToProcess['highPassFilter'])
-        if  jobToProcess['doPreFilter'] == 'Yes':
-            args += " --do_pre_filter"
+        if  jobToProcess['doPreFilter']:
+            args += " --do_pre_filter " + jobToProcess['doPreFilter'] 
         if  jobToProcess['preFilterLowPass']:
             args += " --pre_lp " + str(jobToProcess['preFilterLowPass'])
         if  jobToProcess['preFilterHighPass']:
@@ -781,36 +788,36 @@ class autoPicking:
             args += " --T_norm_type " + str(jobToProcess['templateNormType'])
         if  jobToProcess['doBandpassFilter']:
             args += " --do_bandpass " + str(jobToProcess['doBandpassFilter'])
-        if  jobToProcess['writeCrossCorrelationMrcs'] == 'Yes':
-            args += " --write_ccmax_mic"
-        if  jobToProcess['writePhaseFlippedMrcs'] == 'Yes':
-            args += " --write_pf_mic"
-        if  jobToProcess['writePreFilteredMrcs'] == 'Yes':
-            args += " --write_pref_mic"
-        if  jobToProcess['writeEstBackgroundMrcs'] == 'Yes':
-            args += " --write_bg_mic"
-        if  jobToProcess['writeBackgroundSubtractedMrcs'] == 'Yes':
-            args += " --write_bgfree_mic"
-        if  jobToProcess['writeLocalSigmaMrcs'] == 'Yes':
-            args += " --write_lsigma_mic"
-        if  jobToProcess['writeAutoDetectedMask'] == 'Yes':
-            args += " --write_mic_mask"
-        if  jobToProcess['pickByPreDefinedCoords'] == 'Yes':
-            args += " --exclusive_picking"
+        if  jobToProcess['writeCrossCorrelationMrcs']:
+            args += " --write_ccmax_mic " + jobToProcess['writeCrossCorrelationMrcs']
+        if  jobToProcess['writePhaseFlippedMrcs']:
+            args += " --write_pf_mic " + jobToProcess['writePhaseFlippedMrcs']
+        if  jobToProcess['writePreFilteredMrcs']:
+            args += " --write_pref_mic " + jobToProcess['writePreFilteredMrcs']
+        if  jobToProcess['writeEstBackgroundMrcs']:
+            args += " --write_bg_mic " + jobToProcess['writeEstBackgroundMrcs']
+        if  jobToProcess['writeBackgroundSubtractedMrcs']:
+            args += " --write_bgfree_mic " + jobToProcess['writeBackgroundSubtractedMrcs']
+        if  jobToProcess['writeLocalSigmaMrcs']:
+            args += " --write_lsigma_mic " + jobToProcess['writeLocalSigmaMrcs']
+        if  jobToProcess['writeAutoDetectedMask']:
+            args += " --write_mic_mask " + jobToProcess['writeAutoDetectedMask']
+        if  jobToProcess['pickByPreDefinedCoords']:
+            args += " --exclusive_picking " + jobToProcess['pickByPreDefinedCoords']
         if  jobToProcess['excludedSuffixCoords']:
             args += " --excluded_suffix " + str(jobToProcess['excludedSuffixCoords'])
-        if  jobToProcess['maskExcludedCoords'] == 'Yes':
-            args += " --mask_excluded"
+        if  jobToProcess['maskExcludedCoords']:
+            args += " --mask_excluded " + jobToProcess['maskExcludedCoords']
         if  jobToProcess['globalExcludedCoords']:
             args += " --global_box_excluded" + str(jobToProcess['globalExcludedCoords'])
-        if  jobToProcess['doUnfinished'] == 'Yes':
-            args += " --do_unfinished"
-        if  jobToProcess['dontInvertTemplateContrast'] == 'Yes':
-            args += " --dont_invertT"
-        if  jobToProcess['extractRawParticle'] == 'Yes':
-            args += " --extract_raw"
-        if  jobToProcess['extractPhaseFlipped'] == 'Yes':
-            args += " --extract_pf"
+        if  jobToProcess['doUnfinished']:
+            args += " --do_unfinished " + jobToProcess['doUnfinished']
+        if  jobToProcess['dontInvertTemplateContrast']:
+            args += " --dont_invertT " + jobToProcess['dontInvertTemplateContrast']
+        if  jobToProcess['extractRawParticle']:
+            args += " --extract_raw " + jobToProcess['extractRawParticle']
+        if  jobToProcess['extractPhaseFlipped']:
+            args += " --extract_pf " + jobToProcess['extractPhaseFlipped']
         if  jobToProcess['inMrc']:
             args += " " + jobToProcess['inMrc']
         return args
@@ -849,7 +856,75 @@ class autoPicking:
         self.jobsList.options = listedJobsList
         self.jobNumber.value = ''
 
+    # buildSymlinks() - used for 'Workflow' mode. Builds a list of symlinks to output
+    #                   micrographs from motioncorr in preparation for Gctf processing.
+    #    Arguments:
+    #        projectDirectory - contains the home directory of the Relion project for all jobs.
+    #        motionCorrFolder - contains the output folder for motionCorr jobs. Used to build symlinks
+    #                      for gautomatch input 
+    #
+    def buildSymlinks(self, projectDirectory, motionCorrFolder):
+        #obtain a list of micrographs produced by motionCorr
+        micrographs = glob.glob(projectDirectory + motionCorrFolder + '/*/Micrographs/*.mrc')
+
+        for i in range(len(micrographs)):
+            
+            #The new name combines the motionCorr jobNo with the micrograph name.
+            split = micrographs[i].rsplit('/', 3)
+            newFileName = split[-3] + '-' + split[-1]
+            
+            if  micrographs[i].endswith('_DW.mrc'):
+                #ignoring Dose Weighted micrographs
+                continue
+            elif os.path.exists(newFileName):
+                #ignoring, symlink exists, already created.
+                continue
+            else:
+                os.symlink(micrographs[i], newFileName)
+                
+    # runAllWorkflowJobs() - execute all jobs in the list. Only executed in 'workflow' mode
+    #    Arguments:
+    #        projectDirectory  - Contains the home directory of the Relion project for all jobs.
+    #        motionCorrFolder  - contains the motionCorr2 output folder
+    #
+    def runAllWorkflowJobs(self, projectDirectory, motionCorrFolder):
+        #obtain the listedJobs
+        listedJobs = self.jobsList.options
+        listedJobsList = list(listedJobs)
+
+        self.runProgress.max = len(listedJobsList)
+
+        if  projectDirectory.endswith('/') == False:
+            projectDirectory += '/'        
+        
+        #Run each job, but not the Header row.
+        for i in range(len(listedJobsList)):
+            #setting progress bar to show job has started running.
+            if  (str(listedJobsList[i]).startswith('Job#') == True):
+                self.runProgress.value = i+1    
+
+            if  (str(listedJobsList[i]).startswith('Job#') == False):
+                #'Workflow' mode
+                outputFolder = projectDirectory + listedJobsList[i]['outMrc'] + listedJobsList[i]['jobNumber'] + '/Micrographs/'
+                try:
+                    #mkdir -p path, if folder exists, that's OK
+                    os.makedirs(outputFolder, exist_ok=True)
+                        
+                    #change working directory
+                    os.chdir(outputFolder)
+                        
+                    #create symlinks to output *.mrc from motionCorr jobs
+                    self.buildSymlinks(projectDirectory, motionCorrFolder)
+                        
+                except OSError as err:
+                    self.errorText.value = "Unable to setup processing structure: {0}".format(err) + '\n'
+                else:
+                    #build arguments list, run program
+                    self.callProgram(self.program, self.buildArgumentsList(listedJobsList[i]), outputFolder)
+                self.runProgress.value = i+1           
+                
     # runAllJobs() - execute all jobs in the list.
+    #    target - not used, exists to make to make the button call work.
     #
     def runAllJobs(self, target):
         #obtain the listedJobs
@@ -932,7 +1007,7 @@ class autoPicking:
         self.runAllButton.on_click(self.runAllJobs)
 
         buttons = HBox([self.addButton, self.deleteButton, self.selectButton, self.updateButton, self.runAllButton, self.runProgress])
-        selectableTable = VBox([self.jobsList, buttons])
+        selectableTable = VBox([self.jobsList, buttons, self.errorText])
 
         inputWidgets = self.buildInputWidgets()
 

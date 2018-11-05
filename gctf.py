@@ -1,4 +1,5 @@
-import subprocess as subp
+import os
+import glob
 import ipywidgets as widgets
 from ipywidgets import HBox, VBox, Box, Label, Layout
 
@@ -16,7 +17,6 @@ class contrastTransFunc:
     basicLayout = Layout(width='60%')
     advLayout = Layout(width='40%')
     
-    
     #Input fields for Gctf
     jobNumber = widgets.Text(
         description='Job No: ',
@@ -26,7 +26,7 @@ class contrastTransFunc:
 
     inMrc = widgets.Text(
         value='',
-        placeholder='path for input MCR file or folder containing MRC files',
+        placeholder='path for input mrc file or folder containing mrc files',
         description='Input: ',
         disabled=False,
         style=styleBasic,
@@ -34,7 +34,7 @@ class contrastTransFunc:
 
     outMrc = widgets.Text(
         value='',
-        placeholder='path for output MCR file',
+        placeholder='path for saving job output, errors and arguments',
         description='Output: ',
         disabled=False,
         style=styleBasic,
@@ -499,6 +499,15 @@ class contrastTransFunc:
     ## Job Maintenance fields
     #      
 
+    errorText = widgets.Textarea(
+        description='',
+        description_tooltip='Error messages',
+        placeholder='Errors',
+        disabled=True,
+        rows=1,
+        style=styleBasic,
+        layout=basicLayout)    
+    
     ##Debug assistance
     debug = widgets.Textarea(
         description='Debugging:',
@@ -517,24 +526,31 @@ class contrastTransFunc:
         self.callProgram = callProgramFunc
         self.showDebug = showDebug
     
-    #Single Job run support
+    # runSingleJob() - execute a single job
+    #
     def runSingleJob(self, target):
-        self.callProgram(self.program, self.buildArgumentsList(self.buildJob('', '', '', self.jobNumber)), self.outMrc.value) 
+        self.runProgress.max = 2
+        self.runProgress.value = 1        
+        self.callProgram(self.program, self.buildArgumentsList(self.buildJob('', '', '', self.jobNumber)), self.outMrc.value)
+        self.runProgress.value = self.runProgress.max
     
     #Multi value field processing support
     # addPhaseShiftTargetJobs() - add new jobs for all 'phaseShiftTarget' values entered
+    #
     def addPhaseShiftTargetJobs(self, target):
         self.addJobs("phaseShiftTarget", self.phaseShiftTargetMulti.value)
 
     # addPhaseShiftRefineJobs() - add new jobs for all 'phaseShiftRefine' values entered
+    #
     def addPhaseShiftRefineJobs(self, target):
         self.addJobs("phaseShiftRefine", self.phaseShiftRefineMulti.value)
 
     # addPhaseShiftRefineTypeJobs() - add new jobs for all 'phaseShiftRefineType' values entered
+    #
     def addPhaseShiftRefineTypeJobs(self, target):
         self.addJobs("phaseShiftRefineType", self.phaseShiftRefineTypeMulti.value)
 
-    # buildInputWidgets() - write all the Motion Correction input fields to the screen.
+    # buildInputWidgets() - write all the Gctf input fields to the screen.
     #
     def buildInputWidgets(self):
         #linking button on_click to function    
@@ -570,7 +586,6 @@ class contrastTransFunc:
             return VBox([self.debug, tab, self.runButton])
         else:
             return VBox([tab, self.runButton])
-        #display(tab)
 
     # buildNewJobs() - construct a job containing all arguments.
     #    Arguments:
@@ -813,15 +828,12 @@ class contrastTransFunc:
             args += " --ctfstar " + jobToProcess['outputCTFstar']
         if  jobToProcess['logSuffix']:
             args += " --logsuffix " + jobToProcess['logSuffix']
-        #doUnfinished == Yes
-        if  jobToProcess['doUnfinished'] == 1:
-            args += " --do_unfinished "
-        #skipMRCcheck == Yes
-        if  jobToProcess['skipMRCcheck'] == 1:
-            args += " --skip_check_mrc "
-        #skipGPUcheck == Yes
-        if  jobToProcess['skipGPUcheck'] == 1:
-            args += " --skip_check_gpu "
+        if  jobToProcess['doUnfinished']:
+            args += " --do_unfinished " + str(jobToProcess['doUnfinished'])
+        if  jobToProcess['skipMRCcheck']:
+            args += " --skip_check_mrc " + str(jobToProcess['skipMRCcheck'])
+        if  jobToProcess['skipGPUcheck']:
+            args += " --skip_check_gpu " + str(jobToProcess['skipGPUcheck'])
         if  jobToProcess['gpu']:
             args += " --gid " + jobToProcess['gpu']
         if  jobToProcess['inMrc']:
@@ -862,7 +874,75 @@ class contrastTransFunc:
         self.jobsList.options = listedJobsList
         self.jobNumber.value = ''
 
+    # buildSymlinks() - used for 'Workflow' mode. Builds a list of symlinks to output
+    #                   micrographs from motioncorr in preparation for Gctf processing.
+    #    Arguments:
+    #        projectDirectory - contains the home directory of the Relion project for all jobs.
+    #        motionCorrFolder - contains the output folder for motionCorr jobs. Used to build symlinks
+    #                      for gctf input
+    #
+    def buildSymlinks(self, projectDirectory, motionCorrFolder):
+        #obtain a list of micrographs produced by motionCorr
+        micrographs = glob.glob(projectDirectory + motionCorrFolder + '/*/Micrographs/*.mrc')
+
+        for i in range(len(micrographs)):
+            
+            #The new name combines the motionCorr jobNo with the micrograph name.
+            split = micrographs[i].rsplit('/', 3)
+            newFileName = split[-3] + '-' + split[-1]
+            
+            if  micrographs[i].endswith('_DW.mrc'):
+                #ignoring Dose Weighted micrographs
+                continue
+            elif os.path.exists(newFileName):
+                #ignoring, symlink exists, already created.
+                continue
+            else:
+                os.symlink(micrographs[i], newFileName)
+        
+    # runAllWorkflowJobs() - execute all jobs in the list. Only executed in 'workflow' mode
+    #    Arguments:
+    #        projectDirectory  - contains the home directory of the Relion project for all jobs.
+    #        motionCorrFolder  - contains the motionCorr2 output folder
+    #
+    def runAllWorkflowJobs(self, projectDirectory, motionCorrFolder):
+        #obtain the listedJobs
+        listedJobs = self.jobsList.options
+        listedJobsList = list(listedJobs)
+
+        self.runProgress.max = len(listedJobsList)
+
+        if  projectDirectory.endswith('/') == False:
+            projectDirectory += '/'
+            
+        #Run each job, but not the Header row.
+        for i in range(len(listedJobsList)):
+            #setting progress bar to show job has started running.
+            if  (str(listedJobsList[i]).startswith('Job#') == True):
+                self.runProgress.value = i+1    
+
+            if  (str(listedJobsList[i]).startswith('Job#') == False):
+                #'Workflow' mode
+                outputFolder = projectDirectory + listedJobsList[i]['outMrc'] + listedJobsList[i]['jobNumber'] + '/Micrographs/'
+                try:
+                    #mkdir -p path, if folder exists, that's OK
+                    os.makedirs(outputFolder, exist_ok=True)
+                        
+                    #change working directory
+                    os.chdir(outputFolder)
+                        
+                    #create symlinks to output *.mrc from motionCorr jobs
+                    self.buildSymlinks(projectDirectory, motionCorrFolder)
+                        
+                except OSError as err:
+                    self.erorrText.value = "Unable to setup processing structure: {0}".format(err) + '\n' 
+                else:
+                    #build arguments list, run program
+                    self.callProgram(self.program, self.buildArgumentsList(listedJobsList[i]), outputFolder)
+                self.runProgress.value = i+1           
+                
     # runAllJobs() - execute all jobs in the list.
+    #    target - not used, exists to make to make the button call work.
     #
     def runAllJobs(self, target):
         #obtain the listedJobs
@@ -895,8 +975,6 @@ class contrastTransFunc:
     # updateJob() - update the job for the displayed job number
     #
     def updateJob(self, target):
-        self.debug.value = self.debug.value + 'inside UpdateJob \n' 
-
         #obtain the listedJobs
         listedJobs = self.jobsList.options
         listedJobsList = list(listedJobs)
@@ -908,7 +986,6 @@ class contrastTransFunc:
             #skip checking the header
             if  (str(listedJobsList[i]).startswith('Job#') == False):
                 listedJobNo = listedJobsList[i]["jobNumber"]
-                self.debug.value = self.debug.value + 'listedJobNo: ' + str(listedJobNo) + '\n' 
                 if  listedJobNo == updateJobNo:
                     listedJobsList[i] = updatedJob
 
@@ -948,7 +1025,7 @@ class contrastTransFunc:
         self.runAllButton.on_click(self.runAllJobs)
 
         buttons = HBox([self.addButton, self.deleteButton, self.selectButton, self.updateButton, self.runAllButton, self.runProgress])
-        selectableTable = VBox([self.jobsList, buttons])
+        selectableTable = VBox([self.jobsList, buttons, self.errorText])
 
         inputWidgets = self.buildInputWidgets()
 
