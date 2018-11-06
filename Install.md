@@ -2,7 +2,7 @@
 
 This tool has been developed for deployment on Massive (https://massive.org.au) and runs as a Jupyter Lab.
 
-Start your Desktop on Massive. 
+Start your Desktop on Massive.
 An 'Advanced' Desktop is recommended to gain suitable GPU performance.  
 For help please refer to: https://docs.massive.org.au/M3/connecting/connecting-via-strudel.html
 
@@ -48,23 +48,23 @@ If you have previously installed, please see 'Running' below.
 
 7. Inside Jupyter Lab, open the CryoEm-Processing folder.
 
-  ![Image of Jupyter Lab](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/selectCryoEm-Processing.png)
+  ![Image of Jupyter Lab](./images/selectCryoEm-Processing.png)
 
 8. Double click on 'CryoEmProcTool.ipynb', you should now see the notebook.
 
-  ![Image of open CryoEmProcTool.ipynb](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/openCryoEmProcTool.png)
+  ![Image of open CryoEmProcTool.ipynb](./images/openCryoEmProcTool.png)
 
 9. Press Shift+Enter 3 times to execute the notebook.
 
-  ![Image of Notebook](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/executeNotebook.png)
+  ![Image of Notebook](./images/executeNotebook.png)
 
 10. The CryoEm Processing Tool is now ready.
 
-  ![Image of CryoEmProcTool](https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing/blob/master/images/readyForProcessing.png)
+  ![Image of CryoEmProcTool](./images/readyForProcessing.png)
 
 # Running
 
-Follow these instructions if you have previously installed. 
+Follow these instructions if you have previously installed.
 Ensure your Massive Desktop is running.
 
 1. Activate the Virtual environment
