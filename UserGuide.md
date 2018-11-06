@@ -37,26 +37,26 @@ There are three main tabs, representing each program:
 
 Each tab, works independently of the others. Jobs are created on each tab, only for that program.
 
-** Running a Single Job **
+__Running a Single Job__
   - clicking the 'Run' button will execute the program based on the input fields.
 
-** Running Multiple Jobs **
+__Running Multiple Jobs__
 
   This process allow you to run the program against the same or different input files by altering parameters to obtain the best results for your data.
 
   1. Add Jobs:
-    - Complete all fields as required. Ensure you complete the fields on all tabs. e.g. 'Basic' and 'Advanced' for Motion correction.
-    - Click on 'Add' to create the job. A new row will appear in the 'Jobs' field.
-    - Alter values as required and click 'Add' to add more jobs.
+    * Complete all fields as required. Ensure you complete the fields on all tabs. e.g. 'Basic' and 'Advanced' for Motion correction.
+    * Click on 'Add' to create the job. A new row will appear in the 'Jobs' field.
+    * Alter values as required and click 'Add' to add more jobs.
   2. Run Jobs:
-    - Clicking on 'Run All' will execute all jobs created.
+    * Clicking on 'Run All' will execute all jobs created.
   3. Delete Jobs:
-    - Using your mouse, select a job.
-    - Click Delete.
+    * Using your mouse, select a job.
+    * Click Delete.
   4. Update Job:
-     - select the job and click 'Select'
-     - alter values as required.
-     - Click 'Update'.
+    * select the job and click 'Select'
+    * alter values as required.
+    * Click 'Update'.
 
 **Note**: When running MotionCor2, Gctf or Gautomatch from any of these tabs, the programs behave as if they had been executed on the command line.
 
@@ -153,7 +153,7 @@ mc2-Falcon_2012_06_12-14_33_35_0_rejected.box
 mc2-Falcon_2012_06_12-14_33_35_0_rejected.star
 ```
 
-** Important ** Note how the files for Contrast Transfer Function (ctf) and Auto Particle Picking (gautomatch) are prefixed with 'mc1' and 'mc2'. This represents the job output from Motion Correction. Each job for gctf and gautomatch is run against all job output from motion correction.
+__Important__ Note how the files for Contrast Transfer Function (ctf) and Auto Particle Picking (gautomatch) are prefixed with 'mc1' and 'mc2'. This represents the job output from Motion Correction. Each job for gctf and gautomatch is run against all job output from motion correction.
 
 ##### Customise
 
