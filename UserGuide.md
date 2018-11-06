@@ -45,18 +45,18 @@ __Running Multiple Jobs__
   This process allow you to run the program against the same or different input files by altering parameters to obtain the best results for your data.
 
   1. Add Jobs:
-    * Complete all fields as required. Ensure you complete the fields on all tabs. e.g. 'Basic' and 'Advanced' for Motion correction.
-    * Click on 'Add' to create the job. A new row will appear in the 'Jobs' field.
-    * Alter values as required and click 'Add' to add more jobs.
+      * Complete all fields as required. Ensure you complete the fields on all tabs. e.g. 'Basic' and 'Advanced' for Motion correction.
+      * Click on 'Add' to create the job. A new row will appear in the 'Jobs' field.
+      * Alter values as required and click 'Add' to add more jobs.
   2. Run Jobs:
-    * Clicking on 'Run All' will execute all jobs created.
+      * Clicking on 'Run All' will execute all jobs created.
   3. Delete Jobs:
-    * Using your mouse, select a job.
-    * Click Delete.
+      * Using your mouse, select a job.
+      * Click Delete.
   4. Update Job:
-    * select the job and click 'Select'
-    * alter values as required.
-    * Click 'Update'.
+      * select the job and click 'Select'
+      * alter values as required.
+      * Click 'Update'.
 
 **Note**: When running MotionCor2, Gctf or Gautomatch from any of these tabs, the programs behave as if they had been executed on the command line.
 
