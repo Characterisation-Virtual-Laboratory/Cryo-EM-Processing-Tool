@@ -52,18 +52,9 @@ Details: Discussed workflow mode. Jay asked Hari to test the functionality.
 	 Jay showed Hari the Ctf Review functionality which displays the ctf micrographs.
 
 	To improve this functionality, The native call to Gctf will be replaced with a
-  call to the Relion wrapped version: "relion_run_ctffind".It uses gctf 1.06, we
+  call to the Relion wrapped version: "relion_run_ctffind". It uses gctf 1.06, we
   should be using that version too, as 1.18 is different. The wrapped version
   supports "other options" to support gctf options not on the Relion screens.
-
-	I will probably need to also alter Motion Corr to use the Relion wrapped
-  version of gctf as it produces an output .star file used as input to the Relion
-  wrapped version of gctf.
-
-	The reason to use the Relion wrapped ctf, is that it creates an output .star file.
-	I can use this .star file to build input to the 'Ctf Review. It contains ctf
-  values that can be used for sorting purposes. This will save me from needing
-  to write the code to create the .star file.
 
 	The 'Ctf review' screen should contain the following fields 'Defocus U,
   Defocus V, Defocus Angle, Voltage, Spherical Aberration, Amplitude Contrast,
@@ -80,4 +71,33 @@ Details: Discussed workflow mode. Jay asked Hari to test the functionality.
 		- 'Details' which will show all the values
 		- 'Original' which will display the input micrograph.
 
-  Add a button the trigger the 'workflow' every 5 minutes.
+  Add a button to trigger the 'workflow' every 5 minutes.
+
+20-22-2018
+Where: eResearch Breakout Room 39
+Who: Hari, Jay
+
+Details: Discussed the CtfReview functionality.
+
+  For Gctf v1.06 which fields are required to support multiple values for creating jobs ?
+    - as it is currenlty coded is fine.
+
+  For Gautomatch which fields are required to support multiple values for creating jobs ?
+    - 'Particle Picking Templates' and 'Pixel Size Template'
+
+  Single program mode will be hardly used. This mode will be defaulted to 'Workflow'
+
+  For running Gctf, default 'Phase Shift Target' to 'Resolution Limit' as the
+  'Max Ctf Resolution' needs to be calculated.
+
+  For Gctf input fields, enable/disable the fields on tabs 'Phase Plate' and 'Defocus'
+  to ensure they are not used when calling Gctf. This should fix the multiple Refine 2D steps
+  being created in the _gctf.log
+
+  Allow for the Ctf results to be ordered by 'Defocus_U', 'Figure of Merit' and 'Ctf
+  Max Resolution'
+
+  Use the 'filter' to determine the MRCs for further processing, then save to .star
+  file.
+
+  Is the display of the raw MRCs OK ? Yes
