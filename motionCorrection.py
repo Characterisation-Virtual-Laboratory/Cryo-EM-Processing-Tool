@@ -18,6 +18,7 @@ class motionCorrection:
     styleAdvanced = {'description_width': '130px'}
     basicLayout   = Layout(width='60%')
     advLayout     = Layout(width='100%')
+    errorLayout   = Layout(width='60%', border='2px solid red')
 
     #Input fields for Motion Correction
     jobNumber = widgets.Text(
@@ -353,13 +354,17 @@ class motionCorrection:
         layout=basicLayout)    
     
     ##Debug assistance
-    debug = widgets.Textarea(
+    debug = widgets.Output(
+        style=styleBasic,
+        layout=Layout(width='90%')) 
+
+    debugText = widgets.Textarea(
         description='Debugging:',
-        description_tooltip='Debugging output',
+        description_tooltip='Standard output',
         disabled=False,
         rows=10,
         style=styleBasic,
-        layout=Layout(width='90%'))    
+        layout=Layout(width='90%'))   
     
     # __init__() - initialise the class jobMaintenance
     #    Arguments:
@@ -372,6 +377,7 @@ class motionCorrection:
     
     # runSingleJob() - execute a single job
     #
+    @debug.capture(clear_output=True)
     def runSingleJob(self, target):
         self.runProgress.max = 2
         self.runProgress.value = 1
@@ -381,16 +387,19 @@ class motionCorrection:
     #Multi value field processing support
     # addPatchJobs() - add new jobs for all 'Patch' values entered
     #
+    @debug.capture(clear_output=True)
     def addPatchJobs(self, target):
         self.addJobs("patch", self.patchMulti.value)
 
     # addBFactorJobs() - add new jobs for all 'BFactor' values entered.
     #
+    @debug.capture(clear_output=True)
     def addBFactorJobs(self, target):
         self.addJobs("bFactor", self.bFactorMulti.value)
 
     # buildInputWidgets() - write all the Motion Correction input fields to the screen.
     #
+    @debug.capture(clear_output=True)
     def buildInputWidgets(self):
         #linking button on_click to function    
         self.runButton.on_click(self.runSingleJob)
@@ -415,7 +424,7 @@ class motionCorrection:
         tab.set_title(1, 'Advanced')
         
         if  self.showDebug:
-            return VBox([self.debug, tab, self.runButton])
+            return VBox([self.debug, self.debugText, tab, self.runButton])
         else:
             return VBox([tab, self.runButton])
 
@@ -429,6 +438,7 @@ class motionCorrection:
     #     B) When 'fieldName' and 'values' are not populated:
     #        - dict representing a single job
     #
+    @debug.capture(clear_output=True)
     def buildNewJobs(self, fieldName, values):
         fieldList = []
         jobList = []
@@ -468,6 +478,7 @@ class motionCorrection:
     #    Return:
     #        dict containing all arguments.
     #
+    @debug.capture(clear_output=True)
     def buildJob(self, patchValue, bFactorValue, jobNo):
         
         jobNoWithPrefix = self.jobPrefix + str(jobNo)
@@ -516,6 +527,7 @@ class motionCorrection:
     #    Arguments:
     #        selectedJob - a dict containing all screen values.
     #
+    @debug.capture(clear_output=True)
     def updateScreenFields(self, selectedJob):
         self.jobNumber.value     = selectedJob['jobNumber']
         self.inMrc.value         = selectedJob['inMrc']
@@ -551,6 +563,7 @@ class motionCorrection:
     #                    *.star file in 'Workflow' mode
     #        prefixName - prefix used to create the output file. Required for 'Workflow'
     #                     mode.
+    @debug.capture(clear_output=True)
     def buildArgumentsList(self, jobToProcess, inputFile, prefixName):
         args = ''
 
@@ -621,6 +634,7 @@ class motionCorrection:
     
     # addJob() - builds the new job from the input variables and updates the job list.
     #
+    @debug.capture(clear_output=True)
     def addJob(self, target):
         listedJobs = self.jobsList.options
         listedJobsList = list(listedJobs)
@@ -634,6 +648,7 @@ class motionCorrection:
 
     # deleteJob() - delete selected jobs from the job list.
     #
+    @debug.capture(clear_output=True)
     def deleteJob(self, target):
         #obtain the listedJobs
         listedJobs = self.jobsList.options
@@ -657,6 +672,7 @@ class motionCorrection:
     #    Return:
     #         a list of micrographs.
     #
+    @debug.capture(clear_output=True)
     def loadMicrographs(self, projectDirectory, starFilePath):
         foundDataBlock = False
         foundLoopBlock = False
@@ -665,6 +681,8 @@ class motionCorrection:
         
         #open *.star file and read micrographs into list.
         fileFullPath = projectDirectory + starFilePath
+        
+        self.errorText.layout = self.basicLayout
         
         try:
             with open(fileFullPath, 'r') as filehandle: 
@@ -680,6 +698,7 @@ class motionCorrection:
                         micrographs.append(line.rstrip())
         except OSError as err:
             self.errorText.value += "Unable to load Micrographs: {0}".format(err) + '\n'
+            self.errorText.layout = self.errorLayout
         else:
             filehandle.close()            
 
@@ -689,6 +708,7 @@ class motionCorrection:
     #    Arguments:
     #        projectDirectory  - contains the home directory of the Relion project for all jobs.
     #
+    @debug.capture(clear_output=True)
     def runAllWorkflowJobs(self, projectDirectory):
         #obtain the listedJobs
         listedJobs = self.jobsList.options
@@ -698,7 +718,9 @@ class motionCorrection:
 
         if  projectDirectory.endswith('/') == False:
             projectDirectory += '/'
-            
+        
+        self.errorText.layout = self.basicLayout
+        
         #Run each job, but not the Header row.
         for i in range(len(listedJobsList)):
             #setting progress bar to show job has started running.
@@ -717,7 +739,8 @@ class motionCorrection:
                     #change working directory
                     os.chdir(projectDirectory)
                 except OSError as err:
-                    self.errorText.value += "Unable to build folder: {0}".format(err) + '\n'                 
+                    self.errorText.value += "Unable to build folder: {0}".format(err) + '\n'
+                    self.errorText.layout = self.errorLayout
                 else:    
                     #run for each micrograph in .star file
                     for j in range(len(micrographs)):
@@ -738,6 +761,7 @@ class motionCorrection:
     # runAllJobs() - execute all jobs in the list.
     #    target - not used, exists to make to make the button call work.
     #
+    @debug.capture(clear_output=True)
     def runAllJobs(self, target):
         #obtain the listedJobs
         listedJobs = self.jobsList.options
@@ -757,6 +781,7 @@ class motionCorrection:
 
     # selectJob() - update field values using the selected job in the job list
     #
+    @debug.capture(clear_output=True)
     def selectJob(self, target):
         #obtain the selectedJobs
         selectedJobs = self.jobsList.value
@@ -768,6 +793,7 @@ class motionCorrection:
     
     # updateJob() - update the job for the displayed job number
     #
+    @debug.capture(clear_output=True)
     def updateJob(self, target):
         #obtain the listedJobs
         listedJobs = self.jobsList.options
@@ -792,6 +818,7 @@ class motionCorrection:
     #        fieldName - name of the field that value range has been specified 
     #        values    - specified values, ';' separated.
     #
+    @debug.capture(clear_output=True)
     def addJobs(self, fieldName, values):
         #obtaining currently listed jobs
         listedJobs = self.jobsList.options
@@ -810,6 +837,7 @@ class motionCorrection:
 
     # buildAllWidgets() - display the jobs list and associated buttons.
     #
+    @debug.capture(clear_output=True)
     def buildAllWidgets(self):
         #Add fuctions to buttons.
         self.addButton.on_click(self.addJob)
