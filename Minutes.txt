@@ -80,7 +80,7 @@ Who: Hari, Jay
 Details: Discussed the CtfReview functionality.
 
   For Gctf v1.06 which fields are required to support multiple values for creating jobs ?
-    - as it is currenlty coded is fine.
+    - as it is currently coded is fine.
 
   For Gautomatch which fields are required to support multiple values for creating jobs ?
     - 'Particle Picking Templates' and 'Pixel Size Template'
@@ -101,3 +101,7 @@ Details: Discussed the CtfReview functionality.
   file.
 
   Is the display of the raw MRCs OK ? Yes
+
+  When running Gctf, don't populate the arguments for Phase Plate, Defocus Movie
+  and Defocus Particle processing, unless enabled. This will improve the results
+  from Gctf. i.e. no multilple 2D Refine steps.
