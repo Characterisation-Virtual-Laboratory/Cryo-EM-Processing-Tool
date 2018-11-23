@@ -10,12 +10,13 @@ class autoPicking:
     program = 'Gautomatch_v0.56_sm20_cu8.0'
     jobPrefix = 'pick'
     header = [("Job# | inMrc | outMrc | pixelSize | diameter | particlePickingTemplates | pixelSizeTemplate | angularStepSize | speedLevel | boxSize | minDistance | crossCorrelationCutoff | localSigmaDiameter | localSigmaCutoff | localAvgDiameter | localAvgMaxCutoff | localAvgMinCutoff | lowPassFilter | highPassFilter | doPreFilter | preFilterLowPass | preFilterHighPass | detectIce | templateNormType | doBandpassFilter |     writeCrossCorrelationMrcs | writePhaseFlippedMrcs | writePreFilteredMrcs | writeEstBackgroundMrcs | writeBackgroundSubtractedMrcs | writeLocalSigmaMrcs | writeAutoDetectedMask | pickByPreDefinedCoords | excludedSuffixCoords | maskExcludedCoords | globalExcludedCoords | doUnfinished | dontInvertTemplateContrast | extractRawParticle | extractPhaseFlipped | gpu |")]
-    
+
     #style and Layout
     styleBasic    = {'description_width': '160px'}
     styleAdvanced = {'description_width': '160px'}
-    basicLayout   = Layout(width='80%')
+    basicLayout   = Layout(width='70%')
     advLayout     = Layout(width='100%')
+    errorLayout   = Layout(width='60%', border='2px solid red')
 
     #Input fields for Motion Correction
     jobNumber = widgets.Text(
@@ -68,6 +69,21 @@ class autoPicking:
         style=styleBasic,
         layout=basicLayout)
 
+    particlePickingTemplatesMulti = widgets.Text(
+        value='',
+        placeholder='Use ";" as separator.',
+        description='Particle Pick Templ list: ',
+        disabled=False,
+        style=styleBasic,
+        layout=basicLayout)
+
+    particlePickingTemplatesMultiButton = widgets.Button(
+        description='Add jobs',
+        disabled=False,
+        button_style='',
+        tooltip='Add multiple jobs',
+        icon='check')
+
     pixelSizeTemplate = widgets.FloatSlider(
         value=1.34,
         min=0,
@@ -81,13 +97,28 @@ class autoPicking:
         style=styleBasic,
         layout=basicLayout)
 
+    pixelSizeTemplateMulti = widgets.Text(
+        value='',
+        placeholder='Use ";" as separator.',
+        description='Pixel Size Templ list: ',
+        disabled=False,
+        style=styleBasic,
+        layout=basicLayout)
+
+    pixelSizeTemplateMultiButton = widgets.Button(
+        description='Add jobs',
+        disabled=False,
+        button_style='',
+        tooltip='Add multiple jobs',
+        icon='check')
+
     gpu = widgets.Text(
         value='',
         placeholder='indicate the GPUs to use',
         description='GPU Usage: ',
         disabled=False,
         style=styleBasic,
-        layout=basicLayout)    
+        layout=basicLayout)
 
     #Additional Options
     angularStepSize = widgets.IntSlider(
@@ -110,7 +141,7 @@ class autoPicking:
         value='2',
         style=styleAdvanced,
         layout=advLayout)
-    
+
     boxSize = widgets.IntText(
         description='Box Size (pixel): ',
         disabled=False,
@@ -175,7 +206,7 @@ class autoPicking:
         readout_format='.1f',
         style=styleAdvanced,
         layout=advLayout)
-    
+
     localAvgMinCutoff = widgets.FloatSlider(
         value=-1.0,
         min=-20,
@@ -188,7 +219,7 @@ class autoPicking:
         readout_format='.1f',
         style=styleAdvanced,
         layout=advLayout)
-    
+
     lowPassFilter = widgets.IntSlider(
         value=30,
         min=0,
@@ -201,7 +232,7 @@ class autoPicking:
         readout_format='d',
         style=styleAdvanced,
         layout=advLayout)
-    
+
     highPassFilter = widgets.IntSlider(
         value=1000,
         min=0,
@@ -222,8 +253,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     preFilterLowPass = widgets.IntSlider(
         value=8,
         min=0,
@@ -236,7 +267,7 @@ class autoPicking:
         readout_format='d',
         style=styleAdvanced,
         layout=advLayout)
-    
+
     preFilterHighPass = widgets.IntSlider(
         value=1000,
         min=0,
@@ -249,7 +280,7 @@ class autoPicking:
         readout_format='d',
         style=styleAdvanced,
         layout=advLayout)
-    
+
     detectIce = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='1',
@@ -257,8 +288,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     templateNormType = widgets.Select(
         options=[('1', '1'), ('2', '2'), ('3', '3')],
         value='1',
@@ -266,7 +297,7 @@ class autoPicking:
         disabled=False,
         rows=3,
         style=styleAdvanced,
-        layout=advLayout)    
+        layout=advLayout)
 
     doBandpassFilter = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
@@ -275,7 +306,7 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
+        layout=advLayout)
 
     #I/O Options
     writeCrossCorrelationMrcs = widgets.Select(
@@ -285,8 +316,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     writePhaseFlippedMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -294,8 +325,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     writePreFilteredMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -303,8 +334,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     writeEstBackgroundMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -312,8 +343,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     writeBackgroundSubtractedMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -321,8 +352,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     writeLocalSigmaMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -330,8 +361,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     writeAutoDetectedMask = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -339,8 +370,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     pickByPreDefinedCoords = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -348,15 +379,15 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     excludedSuffixCoords = widgets.Text(
         placeholder='path for input Relion .star or EMAN .box file containing excluded suffix coordinates',
         description='Excluded Suffix Coords: ',
         disabled=False,
         style=styleAdvanced,
-        layout=advLayout) 
-    
+        layout=advLayout)
+
     maskExcludedCoords = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -364,15 +395,15 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     globalExcludedCoords = widgets.Text(
         placeholder='path for .star or .box file containing coordinates to exclude from all mrcs',
         description='Global Excluded Coords: ',
         disabled=False,
         style=styleAdvanced,
-        layout=advLayout) 
-        
+        layout=advLayout)
+
     doUnfinished = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='1',
@@ -380,8 +411,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     dontInvertTemplateContrast = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -389,8 +420,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     extractRawParticle = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -398,8 +429,8 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
-    
+        layout=advLayout)
+
     extractPhaseFlipped = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
@@ -407,7 +438,7 @@ class autoPicking:
         disabled=False,
         rows=2,
         style=styleAdvanced,
-        layout=advLayout)    
+        layout=advLayout)
 
     runButton = widgets.Button(
         description='Run',
@@ -421,7 +452,7 @@ class autoPicking:
     #  --start--
     existingJobs = []
     jobCounter = 1
-    
+
     #screen fields
     jobsList = widgets.SelectMultiple(
         description='Jobs: ',
@@ -444,9 +475,9 @@ class autoPicking:
         tooltip='Delete job(s)')
 
     selectButton = widgets.Button(
-        description='Select', 
-        disabled=False, 
-        button_style='', 
+        description='Select',
+        disabled=False,
+        button_style='',
         tooltip='Select job for editing.')
 
     updateButton = widgets.Button(
@@ -462,16 +493,16 @@ class autoPicking:
         tooltip='Run all jobs')
 
     runProgress = widgets.IntProgress(
-        value=0, 
-        min=0, 
-        max=10, 
-        step=1, 
-        description='Progress:', 
-        bar_style='', 
+        value=0,
+        min=0,
+        max=10,
+        step=1,
+        description='Progress:',
+        bar_style='',
         orientation='horizontal')
     #  --end--
     ## Job Maintenance fields
-    #      
+    #
 
     errorText = widgets.Textarea(
         description='',
@@ -480,63 +511,65 @@ class autoPicking:
         disabled=True,
         rows=1,
         style=styleBasic,
-        layout=basicLayout)        
-    
+        layout=basicLayout)
+
     ##Debug assistance
-    debug = widgets.Textarea(
+    debug = widgets.Output(
+        style=styleBasic,
+        layout=Layout(width='90%'))
+
+    debugText = widgets.Textarea(
         description='Debugging:',
         description_tooltip='Standard output',
         disabled=False,
         rows=10,
         style=styleBasic,
-        layout=Layout(width='90%'))    
-    
+        layout=Layout(width='90%'))
+
     # __init__() - initialise the class jobMaintenance
     #    Arguments:
     #        callProgramFunc - the function for executing the program
     #        showDebug - display debug fields
-    #    
+    #
     def __init__(self, callProgramFunc, showDebug):
         self.callProgram = callProgramFunc
         self.showDebug = showDebug
-    
+
     # runSingleJob() - execute single job
     #
+    @debug.capture(clear_output=True)
     def runSingleJob(self, target):
         self.runProgress.max = 2
-        self.runProgress.value = 1        
+        self.runProgress.value = 1
         self.callProgram(self.program, self.buildArgumentsList(self.buildJob('', '', self.jobNumber)), self.outMrc.value)
         self.runProgress.value = self.runProgress.max
 
-    """Determine range values for gautomatch        
     #Multi value field processing support
-    # addPatchJobs() - add new jobs for all 'Patch' values entered
-    def addPatchJobs(self, target):
-        self.debug.value = self.debug.value + "Inside addPatchJobs\n"
-        self.addJobs("patch", self.patchMulti.value)
+    # addParticlePickingTemplateJobs() - add new jobs for all 'Particle Picking Template' values entered
+    @debug.capture(clear_output=True)
+    def addParticlePickingTemplateJobs(self, target):
+        self.addJobs("particlePickingTemplates", self.particlePickingTemplatesMulti.value)
 
-    # addBFactorJobs() - add new jobs for all 'BFactor' values entered.
-    def addBFactorJobs(self, target):
-        self.debug.value = self.debug.value + "Inside addBFactorJobs\n"
-        self.addJobs("bFactor", self.bFactorMulti.value)
-    """
+    # addPixelSizeTemplateJobs() - add new jobs for all 'Pixel Size Template' values entered.
+    @debug.capture(clear_output=True)
+    def addPixelSizeTemplateJobs(self, target):
+        self.addJobs("pixelSizeTemplate", self.pixelSizeTemplate.value)
 
     # buildInputWidgets() - write all the Auto Match input fields to the screen.
     #
+    @debug.capture(clear_output=True)
     def buildInputWidgets(self):
-        #linking button on_click to function    
+        #linking button on_click to function
         self.runButton.on_click(self.runSingleJob)
 
-        """Determine range values for gautomatch        
-        self.patchMultiButton.on_click(self.addPatchJobs)
-        self.bFactorMultiButton.on_click(self.addBFactorJobs)        
+        self.particlePickingTemplatesMultiButton.on_click(self.addParticlePickingTemplateJobs)
+        self.pixelSizeTemplateMultiButton.on_click(self.addPixelSizeTemplateJobs)
 
-        patchInputs = HBox([self.patch, self.patchMulti, self.patchMultiButton])
-        bFactorInputs = HBox([self.bFactor, self.bFactorMulti, self.bFactorMultiButton])    
-        """
+        particlePickingTemplatesInputs = HBox([self.particlePickingTemplates, self.particlePickingTemplatesMulti, self.particlePickingTemplatesMultiButton])
+        pixelSizeTemplateInputs = HBox([self.pixelSizeTemplate, self.pixelSizeTemplateMulti, self.pixelSizeTemplateMultiButton])
 
-        basic      = VBox([self.jobNumber, self.inMrc, self.outMrc, self.pixelSize, self.diameter, self.particlePickingTemplates,   
-                           self.pixelSizeTemplate, self.gpu])
+        basic      = VBox([self.jobNumber, self.inMrc, self.outMrc, self.pixelSize, self.diameter, particlePickingTemplatesInputs,
+                           pixelSizeTemplateInputs, self.gpu])
 
         add1 = VBox([self.angularStepSize, self.speedLevel, self.boxSize, self.minDistance, self.crossCorrelationCutoff,
                      self.localSigmaDiameter, self.localSigmaCutoff, self.localAvgDiameter, self.localAvgMaxCutoff,
@@ -548,10 +581,10 @@ class autoPicking:
                             align_items='stretch',
                             border='none',
                             width='150%')
-        additional = Box(children=[add1, add2], layout=addBoxLayout)        
-        
-        
-        io1 = VBox([HBox([self.writeCrossCorrelationMrcs, self.writePhaseFlippedMrcs]), 
+        additional = Box(children=[add1, add2], layout=addBoxLayout)
+
+
+        io1 = VBox([HBox([self.writeCrossCorrelationMrcs, self.writePhaseFlippedMrcs]),
                     HBox([self.writePreFilteredMrcs, self.writeEstBackgroundMrcs]),
                     HBox([self.writeBackgroundSubtractedMrcs, self.writeLocalSigmaMrcs]),
                     HBox([self.writeAutoDetectedMask]),
@@ -564,15 +597,15 @@ class autoPicking:
                             align_items='stretch',
                             border='none',
                             width='150%')
-        #ioOptions = Box(children=[io1, io2], layout=ioBoxLayout)        
-        
+        #ioOptions = Box(children=[io1, io2], layout=ioBoxLayout)
+
         tab = widgets.Tab(children=[basic, additional, io1])
         tab.set_title(0, 'Basic')
         tab.set_title(1, 'Additional')
         tab.set_title(2, 'I/O')
-        
+
         if  self.showDebug:
-            return VBox([self.debug, tab, self.runButton])
+            return VBox([self.debug, self.debugText, tab, self.runButton])
         else:
             return VBox([tab, self.runButton])
 
@@ -586,6 +619,7 @@ class autoPicking:
     #     B) When 'fieldName' and 'values' are not populated:
     #        - dict representing a single job
     #
+    @debug.capture(clear_output=True)
     def buildNewJobs(self, fieldName, values):
         fieldList = []
         jobList = []
@@ -598,35 +632,36 @@ class autoPicking:
 
         """Determine range values for gautomatch        """
         #Building multiple jobs
-        if  fieldName == 'patch':
-            fieldList = self.patchMulti.value.split(";")
-        if  fieldName == 'bFactor':
-            fieldList = self.bFactorMulti.value.split(";")
+        if  fieldName == 'particlePickingTemplates':
+            fieldList = self.particlePickingTemplatesMulti.value.split(";")
+        if  fieldName == 'pixelSizeTemplate':
+            fieldList = self.pixelSizeTemplateMulti.value.split(";")
 
         for i in range(len(fieldList)):
             fieldCleaned = fieldList[i].strip()
-            
+
             if  fieldCleaned:
-                if  fieldName == 'patch':
+                if  fieldName == 'particlePickingTemplates':
                     newJob = self.buildJob(fieldCleaned, '', self.jobCounter)
 
-                if  fieldName == 'bFactor':
+                if  fieldName == 'pixelSizeTemplate':
                     newJob = self.buildJob('', fieldCleaned, self.jobCounter)
 
                 self.jobCounter = self.jobCounter + 1
-                jobList.append(newJob)                    
+                jobList.append(newJob)
 
         return jobList
-        
+
     # buildJob() - construct a single job containing all arguments.
     #    Arguments:
-    #        patchValue - use the patchValue is specified, otherwise use screen value
-    #        bFactorValue - use the bFactorValue if specified, otherwise use screen value
+    #        particlePickingTemplatesValue - use the value if specified, otherwise use screen value
+    #        pixelSizeTemplateValue - use the value if specified, otherwise use screen value
     #        jobNo - the next job number to use
     #    Return:
     #        dict containing all arguments.
     #
-    def buildJob(self, patchValue, bFactorValue, jobNo):
+    @debug.capture(clear_output=True)
+    def buildJob(self, particlePickingTemplatesValue, pixelSizeTemplateValue, jobNo):
 
         jobNoWithPrefix = self.jobPrefix + str(jobNo)
         if  jobNo:
@@ -634,40 +669,37 @@ class autoPicking:
         else:
             newJob = {'jobNumber':self.jobNumber.value}
 
-        newJob['inMrc']                          = self.inMrc.value
-        newJob['outMrc']                         = self.outMrc.value
-        newJob['pixelSize']                      = self.pixelSize.value
+        newJob['inMrc']                         = self.inMrc.value
+        newJob['outMrc']                        = self.outMrc.value
+        newJob['pixelSize']                     = self.pixelSize.value
+        newJob['diameter']                      = self.diameter.value
 
-        """Determine range values for gautomatch        """     
-        #if  patchValue:
-        #    newJob['patch']     = patchValue
-        #else:    
-        #    newJob['patch']     = self.patch.value
+        if  particlePickingTemplatesValue:
+            newJob['particlePickingTemplates']  = particlePickingTemplatesValue
+        else:
+            newJob['particlePickingTemplates']  = self.particlePickingTemplates.value
 
-        #if  bFactorValue:
-        #    newJob['bFactor']   = bFactorValue 
-        #else:
-        #    newJob['bFactor']   = self.bFactor.value 
+        if  pixelSizeTemplateValue:
+            newJob['pixelSizeTemplate']         = pixelSizeTemplateValue
+        else:
+            newJob['pixelSizeTemplate']         = self.pixelSizeTemplate.value
 
-        newJob['diameter']                      = self.diameter.value   
-        newJob['particlePickingTemplates']      = self.particlePickingTemplates.value
-        newJob['pixelSizeTemplate']             = self.pixelSizeTemplate.value
         newJob['gpu']                           = self.gpu.value
         newJob['angularStepSize']               = self.angularStepSize.value
         newJob['speedLevel']                    = self.speedLevel.value
         newJob['boxSize']                       = self.boxSize.value
         newJob['minDistance']                   = self.minDistance.value
         newJob['crossCorrelationCutoff']        = self.crossCorrelationCutoff.value
-        newJob['localSigmaDiameter']            = self.localSigmaDiameter.value   
+        newJob['localSigmaDiameter']            = self.localSigmaDiameter.value
         newJob['localSigmaCutoff']              = self.localSigmaCutoff.value
-        newJob['localAvgDiameter']              = self.localAvgDiameter.value   
-        newJob['localAvgMaxCutoff']             = self.localAvgMaxCutoff.value   
+        newJob['localAvgDiameter']              = self.localAvgDiameter.value
+        newJob['localAvgMaxCutoff']             = self.localAvgMaxCutoff.value
         newJob['localAvgMinCutoff']             = self.localAvgMinCutoff.value
-        newJob['lowPassFilter']                 = self.lowPassFilter.value   
-        newJob['highPassFilter']                = self.highPassFilter.value   
-        newJob['doPreFilter']                   = self.doPreFilter.value   
+        newJob['lowPassFilter']                 = self.lowPassFilter.value
+        newJob['highPassFilter']                = self.highPassFilter.value
+        newJob['doPreFilter']                   = self.doPreFilter.value
         newJob['preFilterLowPass']              = self.preFilterLowPass.value
-        newJob['preFilterHighPass']             = self.preFilterHighPass.value   
+        newJob['preFilterHighPass']             = self.preFilterHighPass.value
         newJob['detectIce']                     = self.detectIce.value
         newJob['templateNormType']              = self.templateNormType.value
         newJob['doBandpassFilter']              = self.doBandpassFilter.value
@@ -692,6 +724,7 @@ class autoPicking:
     #    Arguments:
     #        selectedJob - a dict containing all screen values.
     #
+    @debug.capture(clear_output=True)
     def updateScreenFields(self, selectedJob):
         self.jobNumber.value                     = selectedJob['jobNumber']
         self.inMrc.value                         = selectedJob['inMrc']
@@ -708,24 +741,24 @@ class autoPicking:
         self.crossCorrelationCutoff.value        = selectedJob['crossCorrelationCutoff']
         self.localSigmaDiameter.value            = selectedJob['localSigmaDiameter']
         self.localSigmaCutoff.value              = selectedJob['localSigmaCutoff']
-        self.localAvgDiameter.value              = selectedJob['localAvgDiameter']    
-        self.localAvgMaxCutoff.value             = selectedJob['localAvgMaxCutoff']    
-        self.localAvgMinCutoff.value             = selectedJob['localAvgMinCutoff'] 
-        self.lowPassFilter.value                 = selectedJob['lowPassFilter']  
+        self.localAvgDiameter.value              = selectedJob['localAvgDiameter']
+        self.localAvgMaxCutoff.value             = selectedJob['localAvgMaxCutoff']
+        self.localAvgMinCutoff.value             = selectedJob['localAvgMinCutoff']
+        self.lowPassFilter.value                 = selectedJob['lowPassFilter']
         self.highPassFilter.value                = selectedJob['highPassFilter']
-        self.doPreFilter.value                   = selectedJob['doPreFilter']    
+        self.doPreFilter.value                   = selectedJob['doPreFilter']
         self.preFilterLowPass.value              = selectedJob['preFilterLowPass']
-        self.preFilterHighPass.value             = selectedJob['preFilterHighPass']  
+        self.preFilterHighPass.value             = selectedJob['preFilterHighPass']
         self.detectIce.value                     = selectedJob['detectIce']
-        self.templateNormType.value              = selectedJob['templateNormType'] 
+        self.templateNormType.value              = selectedJob['templateNormType']
         self.doBandpassFilter.value              = selectedJob['doBandpassFilter']
         self.writeCrossCorrelationMrcs.value     = selectedJob['writeCrossCorrelationMrcs']
-        self.writePhaseFlippedMrcs.value         = selectedJob['writePhaseFlippedMrcs'] 
+        self.writePhaseFlippedMrcs.value         = selectedJob['writePhaseFlippedMrcs']
         self.writePreFilteredMrcs.value          = selectedJob['writePreFilteredMrcs']
-        self.writeEstBackgroundMrcs.value        = selectedJob['writeEstBackgroundMrcs'] 
+        self.writeEstBackgroundMrcs.value        = selectedJob['writeEstBackgroundMrcs']
         self.writeBackgroundSubtractedMrcs.value = selectedJob['writeBackgroundSubtractedMrcs']
         self.writeLocalSigmaMrcs.value           = selectedJob['writeLocalSigmaMrcs']
-        self.writeAutoDetectedMask.value         = selectedJob['writeAutoDetectedMask'] 
+        self.writeAutoDetectedMask.value         = selectedJob['writeAutoDetectedMask']
         self.pickByPreDefinedCoords.value        = selectedJob['pickByPreDefinedCoords']
         self.excludedSuffixCoords.value          = selectedJob['excludedSuffixCoords']
         self.maskExcludedCoords.value            = selectedJob['maskExcludedCoords']
@@ -733,12 +766,13 @@ class autoPicking:
         self.doUnfinished.value                  = selectedJob['doUnfinished']
         self.dontInvertTemplateContrast.value    = selectedJob['dontInvertTemplateContrast']
         self.extractRawParticle.value            = selectedJob['extractRawParticle']
-        self.extractPhaseFlipped.value           = selectedJob['extractPhaseFlipped']        
-        
+        self.extractPhaseFlipped.value           = selectedJob['extractPhaseFlipped']
+
     # buildArgumentsList() - builds a string of arguments for calling Motion Correction.
     #    Arguments:
     #        jobToProcess - a dict containing all screen values.
     #
+    @debug.capture(clear_output=True)
     def buildArgumentsList(self, jobToProcess):
         args = ''
 
@@ -777,7 +811,7 @@ class autoPicking:
         if  jobToProcess['highPassFilter']:
             args += " --hp " + str(jobToProcess['highPassFilter'])
         if  jobToProcess['doPreFilter']:
-            args += " --do_pre_filter " + jobToProcess['doPreFilter'] 
+            args += " --do_pre_filter " + jobToProcess['doPreFilter']
         if  jobToProcess['preFilterLowPass']:
             args += " --pre_lp " + str(jobToProcess['preFilterLowPass'])
         if  jobToProcess['preFilterHighPass']:
@@ -821,13 +855,14 @@ class autoPicking:
         if  jobToProcess['inMrc']:
             args += " " + jobToProcess['inMrc']
         return args
-    
+
     #
     ## Job Maintenance functions
-    #  --start--    
-    
+    #  --start--
+
     # addJob() - builds the new job from the input variables and updates the job list.
     #
+    @debug.capture(clear_output=True)
     def addJob(self, target):
         listedJobs = self.jobsList.options
         listedJobsList = list(listedJobs)
@@ -841,6 +876,7 @@ class autoPicking:
 
     # deleteJob() - delete selected jobs from the job list.
     #
+    @debug.capture(clear_output=True)
     def deleteJob(self, target):
         #obtain the listedJobs
         listedJobs = self.jobsList.options
@@ -861,18 +897,19 @@ class autoPicking:
     #    Arguments:
     #        projectDirectory - contains the home directory of the Relion project for all jobs.
     #        motionCorrFolder - contains the output folder for motionCorr jobs. Used to build symlinks
-    #                      for gautomatch input 
+    #                      for gautomatch input
     #
+    @debug.capture(clear_output=True)
     def buildSymlinks(self, projectDirectory, motionCorrFolder):
         #obtain a list of micrographs produced by motionCorr
         micrographs = glob.glob(projectDirectory + motionCorrFolder + '/*/Micrographs/*.mrc')
 
         for i in range(len(micrographs)):
-            
+
             #The new name combines the motionCorr jobNo with the micrograph name.
             split = micrographs[i].rsplit('/', 3)
             newFileName = split[-3] + '-' + split[-1]
-            
+
             if  micrographs[i].endswith('_DW.mrc'):
                 #ignoring Dose Weighted micrographs
                 continue
@@ -881,12 +918,13 @@ class autoPicking:
                 continue
             else:
                 os.symlink(micrographs[i], newFileName)
-                
+
     # runAllWorkflowJobs() - execute all jobs in the list. Only executed in 'workflow' mode
     #    Arguments:
     #        projectDirectory  - Contains the home directory of the Relion project for all jobs.
     #        motionCorrFolder  - contains the motionCorr2 output folder
     #
+    @debug.capture(clear_output=True)
     def runAllWorkflowJobs(self, projectDirectory, motionCorrFolder):
         #obtain the listedJobs
         listedJobs = self.jobsList.options
@@ -895,13 +933,15 @@ class autoPicking:
         self.runProgress.max = len(listedJobsList)
 
         if  projectDirectory.endswith('/') == False:
-            projectDirectory += '/'        
-        
+            projectDirectory += '/'
+
+        self.errorText.layout = self.basicLayout
+
         #Run each job, but not the Header row.
         for i in range(len(listedJobsList)):
             #setting progress bar to show job has started running.
             if  (str(listedJobsList[i]).startswith('Job#') == True):
-                self.runProgress.value = i+1    
+                self.runProgress.value = i+1
 
             if  (str(listedJobsList[i]).startswith('Job#') == False):
                 #'Workflow' mode
@@ -909,23 +949,25 @@ class autoPicking:
                 try:
                     #mkdir -p path, if folder exists, that's OK
                     os.makedirs(outputFolder, exist_ok=True)
-                        
+
                     #change working directory
                     os.chdir(outputFolder)
-                        
+
                     #create symlinks to output *.mrc from motionCorr jobs
                     self.buildSymlinks(projectDirectory, motionCorrFolder)
-                        
+
                 except OSError as err:
                     self.errorText.value = "Unable to setup processing structure: {0}".format(err) + '\n'
+                    self.errorText.layout = self.errorLayout
                 else:
                     #build arguments list, run program
                     self.callProgram(self.program, self.buildArgumentsList(listedJobsList[i]), outputFolder)
-                self.runProgress.value = i+1           
-                
+                self.runProgress.value = i+1
+
     # runAllJobs() - execute all jobs in the list.
     #    target - not used, exists to make to make the button call work.
     #
+    @debug.capture(clear_output=True)
     def runAllJobs(self, target):
         #obtain the listedJobs
         listedJobs = self.jobsList.options
@@ -937,14 +979,15 @@ class autoPicking:
         for i in range(len(listedJobsList)):
             #setting progress bar to show job has started running.
             if  (str(listedJobsList[i]).startswith('Job#') == True):
-                self.runProgress.value = i+1    
+                self.runProgress.value = i+1
 
             if  (str(listedJobsList[i]).startswith('Job#') == False):
                 self.callProgram(self.program, self.buildArgumentsList(listedJobsList[i]), listedJobsList[i]['outMrc'])
-                self.runProgress.value = i+1    
+                self.runProgress.value = i+1
 
     # selectJob() - update field values using the selected job in the job list
     #
+    @debug.capture(clear_output=True)
     def selectJob(self, target):
         #obtain the selectedJobs
         selectedJobs = self.jobsList.value
@@ -953,9 +996,10 @@ class autoPicking:
         #can only select a single job for updating.
         if  len(selectedJobsList) == 1:
             self.updateScreenFields(selectedJobsList[0])
-    
+
     # updateJob() - update the job for the displayed job number
     #
+    @debug.capture(clear_output=True)
     def updateJob(self, target):
         #obtain the listedJobs
         listedJobs = self.jobsList.options
@@ -974,12 +1018,13 @@ class autoPicking:
         #update screen field
         self.jobsList.options = listedJobsList
         self.jobNumber.value = ''
-            
+
     # addJobs() - Adds multiple jobs, when the user has specified a range of values.
     #    Arguments:
-    #        fieldName - name of the field that value range has been specified 
+    #        fieldName - name of the field that value range has been specified
     #        values    - specified values, ';' separated.
     #
+    @debug.capture(clear_output=True)
     def addJobs(self, fieldName, values):
         #obtaining currently listed jobs
         listedJobs = self.jobsList.options
@@ -998,6 +1043,7 @@ class autoPicking:
 
     # buildAllWidgets() - display the jobs list and associated buttons.
     #
+    @debug.capture(clear_output=True)
     def buildAllWidgets(self):
         #Add fuctions to buttons.
         self.addButton.on_click(self.addJob)
@@ -1015,5 +1061,4 @@ class autoPicking:
 
     #  --end--
     ## Job Maintenance functions
-    #      
-        
+    #
