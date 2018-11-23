@@ -16,6 +16,7 @@ class workFlow:
     styleBasic    = {'description_width': '120px'}
     styleAdvanced = {'description_width': '130px'}
     basicLayout   = Layout(width='60%')
+    errorLayout    = Layout(width='60%', border='2px solid red')
 
     #Input fields for Motion Correction
     projectDirectory = widgets.Text(
@@ -28,6 +29,7 @@ class workFlow:
 
     mode = widgets.ToggleButtons(
         options=['Single Process', 'Workflow'],
+        value='Workflow',
         description='Mode:',
         disabled=False,
         button_style='',
@@ -75,13 +77,17 @@ class workFlow:
     #  --start--
     
     ##Debug assistance
-    debug = widgets.Textarea(
+    debug = widgets.Output(
+        style=styleBasic,
+        layout=Layout(width='90%')) 
+
+    debugText = widgets.Textarea(
         description='Debugging:',
         description_tooltip='Standard output',
         disabled=False,
         rows=10,
         style=styleBasic,
-        layout=Layout(width='90%')) 
+        layout=Layout(width='90%'))
     
     motionCorrection = None
     gctf = None
@@ -99,9 +105,13 @@ class workFlow:
         self.gctf = gctf
         self.gautomatch = gautomatch
         self.showDebug = showDebug
+        #default to 'workflow' mode
+        self.workflowProcess()
     
     #Load all jobs from file
+    @debug.capture(clear_output=True)
     def loadJobs(self, target):
+        self.errorText.layout = self.basicLayout
         #read the list, unpickle it.
         try:
             with open(self.projectDirectory.value + self.outputFilename, 'rb') as filehandle:
@@ -109,6 +119,7 @@ class workFlow:
                 allJobs = pickle.load(filehandle)
         except OSError as err:
                 self.errorText.value = "OS error: {0}".format(err)
+                self.errorText.layout = self.errorLayout
         else:
             filehandle.close()
 
@@ -137,6 +148,7 @@ class workFlow:
             self.gautomatch.jobCounter = int(maxGautomatchJobNo.lstrip(self.gautomatch.jobPrefix)) + 1
         
     #Save all jobs to file
+    @debug.capture(clear_output=True)
     def saveJobs(self, target):
         mcListedJobs = list(self.motionCorrection.jobsList.options)
         gctfListedJobs = list(self.gctf.jobsList.options)
@@ -147,41 +159,56 @@ class workFlow:
         allJobs.append(mcListedJobs)
         allJobs.append(gctfListedJobs)
         allJobs.append(gautoListedJobs)
-                
+        
+        self.errorText.layout = self.basicLayout
         #saving the list - pickle it.
         try:
             with open(self.projectDirectory.value + self.outputFilename, 'wb') as filehandle:
                 pickle.dump(allJobs, filehandle)
         except OSError as err:
                 self.errorText.value = "OS error: {0}".format(err)
+                self.errorText.layout = self.errorLayout
         else:
             filehandle.close()
             
     # singleProcess() - manage fields for single processing
     #
+    @debug.capture(clear_output=True)
     def singleProcess(self):    
         #Motion Correction defaults
         self.motionCorrection.outMrc.disabled = False
         self.motionCorrection.outMrc.value = ''
+        self.motionCorrection.runButton.disabled=False
+        self.motionCorrection.runAllButton.disabled=False
         #CTF defaults
         self.gctf.inMrc.disabled = False
         self.gctf.inMrc.value = ''
         self.gctf.outMrc.disabled = False
         self.gctf.outMrc.value = ''        
+        self.gctf.runButton.disabled=False
+        self.gctf.runAllButton.disabled=False
         #Auto Piicking defaults
         self.gautomatch.inMrc.disabled = False
         self.gautomatch.inMrc.value = ''
         self.gautomatch.outMrc.disabled = False
         self.gautomatch.outMrc.value = ''        
+        self.gautomatch.runButton.disabled=False
+        self.gautomatch.runAllButton.disabled=False
+
         
     # workflowProcess() - manage fields for workflow processing
     #
+    @debug.capture(clear_output=True)
     def workflowProcess(self):    
+        self.errorText.layout = self.basicLayout
         #Motion Correction Defaults
         self.motionCorrection.outMrc.disabled = True
         self.motionCorrection.outMrc.value = self.motionCorrFolderName
         if  self.motionCorrection.frameDose.value == 0:
             self.errorText.value = "Motion Correction frame dose must be > 0"
+            self.errorText.layout= self.errorLayout
+        self.motionCorrection.runButton.disabled=True
+        self.motionCorrection.runAllButton.disabled=True
         #CTF defaults
         self.gctf.inMrc.disabled = True
         self.gctf.inMrc.value = '*.mrc'
@@ -189,20 +216,28 @@ class workFlow:
         self.gctf.outMrc.value = self.gctfFolderName
         if  self.gctf.doUnfinished.value == 0:
             self.errorText.value = "Contract Transfer Processing: Continue Processing must be 'Yes'"
+            self.errorText.layout = self.errorLayout
+        self.gctf.runButton.disabled=True
+        self.gctf.runAllButton.disabled=True
         #Gautomatch defaults
         self.gautomatch.inMrc.disabled = True
         self.gautomatch.inMrc.value = '*.mrc'
         self.gautomatch.outMrc.disabled = True
         self.gautomatch.outMrc.value = self.gautomatchFolderName
         if  self.gautomatch.doUnfinished.value == 0:
-            self.errorText.value = "Auto Match: Autopick unfinished mrcs must be 'Yes'"        
+            self.errorText.value = "Auto Match: Autopick unfinished mrcs must be 'Yes'"
+            self.errorText.layout = self.errorLayout
+        self.gautomatch.runButton.disabled=True
+        self.gautomatch.runAllButton.disabled=True
 
     # runWorkflowJobs() - Execute MotionCorr, Gctf and Gautomatch as a workflow.
     #
+    @debug.capture(clear_output=True)
     def runWorkflowJobs(self, target):
         
         dirExists = False
         self.errorText.value= ''
+        self.errorText.layout = self.basicLayout
 
         #Is the Notebook in Workflow mode?
         if  self.mode.value == 'Workflow':
@@ -213,8 +248,10 @@ class workFlow:
                     dirExists = True
                 else:
                     self.errorText.value = "Project directory is not valid"
+                    self.errorText.layout = self.errorLayout
             except OSError as err:
                 self.errorText.value = "OS error: {0}".format(err)        
+                self.errorText.layout = self.errorLayout
 
             if  dirExists == True:
 
@@ -240,9 +277,11 @@ class workFlow:
                 self.runProgress.value = 4    
         else:
             self.errorText.value = "Must be in 'workflow' mode, ensure all jobs created in this mode"
+            self.errorText.layout = self.errorLayout
         
     # on_click() - handle actions for the Mode button    
     #
+    @debug.capture(clear_output=True)
     def on_click(self, change):
         if  self.mode.value == 'Single Process':
             #protect and fill fields as needed.
@@ -253,6 +292,7 @@ class workFlow:
             
     # buildInputWidgets() - write all the workflow fields to the screen.
     #
+    @debug.capture(clear_output=True)
     def buildWidgets(self):
         #linking button on_click to function    
         self.loadButton.on_click(self.loadJobs)
@@ -271,6 +311,6 @@ class workFlow:
                             width='100%')
         
         if  self.showDebug:
-            return VBox([self.debug, self.mode, self.projectDirectory, jobButtons, runBox])
+            return VBox([self.debug, self.debugText, self.mode, self.projectDirectory, jobButtons, runBox])
         else:
             return VBox([self.mode, self.projectDirectory, jobButtons, runBox])
