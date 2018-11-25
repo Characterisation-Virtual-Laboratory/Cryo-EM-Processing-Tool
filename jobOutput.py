@@ -7,8 +7,8 @@ from ipywidgets import HBox, VBox, Box, Label, Layout
 
 class jobOutput:
     #style and Layout
-    styleBasic    = {'description_width': '100px'}
-    outputLayout = Layout(width='90%')
+    styleBasic    = {'description_width': '120px'}
+    outputLayout  = Layout(width='90%')
 
     #screen fields
     argsOutput = widgets.Textarea(
@@ -35,13 +35,17 @@ class jobOutput:
         style=styleBasic,
         layout=outputLayout)
 
-    debug = widgets.Textarea(
+    debug = widgets.Output(
+        style=styleBasic,
+        layout=Layout(width='90%')) 
+
+    debugText = widgets.Textarea(
         description='Debugging:',
         description_tooltip='Standard output',
         disabled=False,
         rows=10,
         style=styleBasic,
-        layout=outputLayout)    
+        layout=Layout(width='90%'))  
     
     def __init__(self, showDebug):
         #instance variables unique to each instance
@@ -54,6 +58,7 @@ class jobOutput:
     #        program   - the executable
     #        folder    - destination of output
     #
+    @debug.capture(clear_output=True)
     def saveOutput(self, program, folder):
         outputFilename = program + "-output.txt"
         argsFilename   = program + "-arguments.txt"
@@ -91,6 +96,7 @@ class jobOutput:
     #        arguments    - string of arguments
     #        outputFolder - destination for saved job output
     #
+    @debug.capture(clear_output=True)
     def call_program(self, program, arguments, outputFolder):
         #Clear output from previous run
         self.stdout.value = ''
@@ -131,10 +137,10 @@ class jobOutput:
                 self.saveOutput(program, outputFolder)
             
     # buildOutputWidgets() - write all output fields to the screen.
+    @debug.capture(clear_output=True)
     def buildOutputWidgets(self):
 
         if  self.showDebug:
-            display(self.debug)
-
-        organiseOutputs = VBox([self.stdout, self.stderr, self.argsOutput])
-        display(organiseOutputs)          
+            return VBox([self.debug, self.debugText, self.stdout, self.stderr, self.argsOutput])
+        else:
+            return VBox([self.stdout, self.stderr, self.argsOutput])
