@@ -17,18 +17,19 @@ If you have previously installed, please see 'Running' below.
 2. Setup a python3 Virtual Environment.
 
    ```
-   /usr/local/python/3.6.2-static/bin/python3 -m venv CryoEm-Processing
+   /usr/local/python/3.6.2-static/bin/python3 -m venv Cryoem-Processing
    ```
 
 3. Activate the Virtual environment
 
   ```
-  source CryoEm-Processing/bin/Activate
+  source Cryoem-Processing/bin/activate
   ```
 
 4. Install Jupyter, Jupyter Lab and Widgets.
 
   ```
+  cd Cryoem-Processing
   bash installNotebook.sh
   ```
 
