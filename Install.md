@@ -36,7 +36,7 @@ If you have previously installed, please see 'Running' below.
 
   ```
   module load motioncor2/2.1
-  module load gctf/1.18_cuda8
+  module load gctf/1.06_cuda8
   module load gautomatch/0.56
   ```
 
@@ -77,7 +77,7 @@ Ensure your Massive Desktop is running.
 
   ```
   module load motioncor2/2.1
-  module load gctf/1.18_cuda8
+  module load gctf/1.06_cuda8
   module load gautomatch/0.56
   ```
 
