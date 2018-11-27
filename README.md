@@ -1,6 +1,6 @@
-# Cryoem-Processing
-Tools for optimising preprocessing of cryoem micrographs
+# Cryo-EM Processing Tool
+Tools for optimising the processing of Cryo-EM micrographs.
 
-For installation details please see [Install.md](./Install.md)
+For installation details see [install.md](./install.md)
 
-For a user guide please read [UserGuide.md](./UserGuide.md).
+For a user guide read [userGuide.md](./userGuide.md).
