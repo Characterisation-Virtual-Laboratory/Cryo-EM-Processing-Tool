@@ -28,7 +28,7 @@ class workFlow:
         layout=basicLayout)
 
     mode = widgets.ToggleButtons(
-        options=['Single Process', 'Workflow'],
+        options=['Single', 'Workflow'],
         value='Workflow',
         description='Mode:',
         disabled=False,

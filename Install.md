@@ -1,39 +1,38 @@
-# Installation
+## Installing the Cryo-EM Processing Tool
 
-This tool has been developed for deployment on Massive (https://massive.org.au) and runs as a Jupyter Lab.
+The Cryo-EM Processing Tool runs as a JupyterLab Notebook on the CVL@M3 Desktop.
 
-Start your Desktop on Massive.
-An 'Advanced' Desktop is recommended to gain suitable GPU performance.  
-For help please refer to: https://docs.massive.org.au/M3/connecting/connecting-via-strudel.html
+If you have already installed the Cryo-EM Processing Tool go to the [User guide for the Cryo-EM Processing Tool](./userGuide.md) page for information on using the tool.
 
-If you have previously installed, please see 'Running' below.
+Start your CVL@M3 Desktop. An 'Advanced' Desktop is recommended to gain suitable GPU performance.  
+For further information on accessing and using a CVL Desktop go to the CVL website's [Getting started on the CVL@M3 Desktop](https://www.cvl.org.au/cvl-desktop/getting-started-with-the-cvl) page.
 
-1. Clone the GitHub Repository
+1. Clone the GitHub repository.
 
     ```
-    git clone https://github.com/Characterisation-Virtual-Laboratory/Cryoem-Processing.git
+    git clone https://github.com/Characterisation-Virtual-Laboratory/Cryo-EM-Processing-Tool.git
     ```
 
-2. Setup a python3 Virtual Environment.
+2. Setup a python3 virtual environment.
 
    ```
-   /usr/local/python/3.6.2-static/bin/python3 -m venv Cryoem-Processing
+   /usr/local/python/3.6.2-static/bin/python3 -m venv Cryo-EM-Processing-Tool
    ```
 
-3. Activate the Virtual environment
+3. Activate the virtual environment.
 
   ```
-  source Cryoem-Processing/bin/activate
+  source Cryo-EM-Processing-Tool/bin/activate
   ```
 
-4. Install Jupyter, Jupyter Lab and Widgets.
+4. Install JupyterLab, widgets and required Python libraries.
 
   ```
-  cd Cryoem-Processing
+  cd Cryo-EM-Processing-Tool
   bash installNotebook.sh
   ```
 
-5. Load the required HPC modules:
+5. Load required HPC modules.
 
   ```
   module load motioncor2/2.1
@@ -41,49 +40,10 @@ If you have previously installed, please see 'Running' below.
   module load gautomatch/0.56
   ```
 
-6. Start the Jupyter Lab.
+6. Start JupyterLab. This will cause your web browser to open and display JupyterLab. If you are not familiar with JupyterLab, please refer to the [documentation.](https://jupyterlab.readthedocs.io/en/stable/)
 
   ```
   jupyter lab
   ```
 
-7. Inside Jupyter Lab, open the CryoEm-Processing folder.
-
-  ![Image of Jupyter Lab](./images/selectCryoEm-Processing.png)
-
-8. Double click on 'CryoEmProcTool.ipynb', you should now see the notebook.
-
-  ![Image of open CryoEmProcTool.ipynb](./images/openCryoEmProcTool.png)
-
-9. Press Shift+Enter 3 times to execute the notebook.
-
-  ![Image of Notebook](./images/executeNotebook.png)
-
-10. The CryoEm Processing Tool is now ready.
-
-  ![Image of CryoEmProcTool](./images/readyForProcessing.png)
-
-# Running
-
-Follow these instructions if you have previously installed.
-Ensure your Massive Desktop is running.
-
-1. Activate the Virtual environment
-
-  ```
-  source CryoEm-Processing/bin/Activate
-  ```
-
-2. Load the required HPC modules:
-
-  ```
-  module load motioncor2/2.1
-  module load gctf/1.06_cuda8
-  module load gautomatch/0.56
-  ```
-
-3. Start the Jupyter Notebook.
-
-  ```
-  jupyter lab
-  ```
+Once you have installed JupyterLab go to the [User guide for the Cryo-EM Processing Tool]() page for information on using the Cryo-EM Processing Tool.

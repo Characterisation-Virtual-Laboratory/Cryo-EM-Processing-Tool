@@ -1,27 +1,72 @@
-# User Guide
+## User Guide for the Cryo-EM Processing Tool
 
 ## Introduction
 
-The Cryo Em Processing Tool was developed to expose all the options
-available from MotionCor2 - Motion Correction (http://msg.ucsf.edu/em/software/motioncor2.html ),
-Gctf (Contrast Transfer Function) and Gautomatch (Auto Particle Picking) (https://www.mrc-lmb.cam.ac.uk/kzhang/) through a user
-friendly screen.
+The processing tool incorporates all the options
+available in [MotionCor2](http://msg.ucsf.edu/em/software/motioncor2.html) (Motion Correction), [Gctf](https://www.mrc-lmb.cam.ac.uk/kzhang/Gctf/) (Contrast Transfer Function) and [Gautomatch](https://www.mrc-lmb.cam.ac.uk/kzhang/Gautomatch/) (Auto Particle Picking) in JupyterLab's user friendly environment.
 
-If you have not installed the tool, please refer to [Install.md](./Install.md)
+If you have not installed the tool, refer to [install.md](./install.md)
 
-### Processing Modes
+## Installing the tool
 
-The tool has been constructed to run MotionCor2, Gctf and Gautomatch as single independent programs or in a 'Workflow' mode to match the 'Relion 2' (https://www2.mrc-lmb.cam.ac.uk/relion/index.php?title=Main_Page) directory structure.
+Installing the Cryo-EM Processing Tool involves a few easy steps: setting up a Python environment, installing JupyterLab and loading some HPC modules. Refer to [Installing the Cryo-EM Processing Tool](./install.md) for instructions.
 
-Please read the 'Single Process Mode' below but this tool has been defaulted to 'Workflow' mode.
+## Running the tool
 
-#### Single Process Mode
+Follow these instructions if you have previously installed.
+Ensure your MASSIVE Desktop is running.
 
-To enable, click on the 'Single Process' button on the Workflow tab.
+1. Activate the virtual environment
 
-![Image of Motion Correction  tab](./images/workflow-single.png)
+  ```
+  source Cryo-Em-Processing-Tool/bin/Activate
+  ```
 
-Single Process mode enables user input for the input/output fields to the three programs.
+2. Load required HPC modules:
+
+  ```
+  module load motioncor2/2.1
+  module load gctf/1.06_cuda8
+  module load gautomatch/0.56
+  ```
+
+3. Start JupyterLab. This will cause your web browser to open showing JupyterLab. If you are not familiar with JupyterLab, please refer to the [documentation.](https://jupyterlab.readthedocs.io/en/stable/)
+
+  ```
+  jupyter lab
+  ```
+
+4. Inside JupyterLab, open the file browser if not visible. Click on the 'folder' icon.
+
+    ![Image of JupyterLab File Browser](./images/jupyterFileBrowser.png)
+
+5. Double click on the file 'Cryo-EM.ipynb', you should now see the notebook.
+
+    ![Image of open Cryo-EM.ipynb](./images/openCryo-EM.png)
+
+6. Press Shift+Enter 5 times to execute the notebook. Alternatively, on the Notebook menu, click the Run button 5 times.
+
+    ![Image of Notebook](./images/executeNotebook.png)
+
+7. The Cryo-EM processing tool is now ready.
+
+    ![Image of Cryo-EM processing tool](./images/readyForProcessing.png)
+
+## Using the tool
+
+### Processing modes
+
+The tool has been constructed to run MotionCor2, Gctf and Gautomatch as 'single' independent programs or in a 'workflow' mode to match the [Relion](https://www2.mrc-lmb.cam.ac.uk/relion/index.php?title=Main_Page) directory structure.
+
+Read 'Single process mode' below as this explains how to create, save and run jobs. This tool has been defaulted to 'Workflow' mode.
+
+#### Single process mode
+
+To enable, click on the 'Single' button on the Workflow tab.
+
+![Image of Motion Correction  tab](./images/workflowSingle.png)
+
+Single process mode enables user input for the input/output fields to the three programs.
 
 There are three main tabs, representing each program:
 
@@ -45,30 +90,30 @@ There are three main tabs, representing each program:
 
 Each tab, works independently of the others. Jobs are created on each tab, only for that program.
 
-__Running a Single Job__
+__Running a single job__
   - clicking the 'Run' button will execute the program based on the input fields.
 
-__Running Multiple Jobs__
+__Running multiple jobs__
 
   This process allow you to run the program against the same or different input files by altering parameters to obtain the best results for your data.
 
-  1. Add Jobs:
+  1. Add jobs:
       * Complete all fields as required. Ensure you complete the fields on all tabs. e.g. 'Basic' and 'Advanced' for Motion correction.
       * Click on 'Add' to create the job. A new row will appear in the 'Jobs' field.
-      * Alter values as required and click 'Add' to add more jobs.
-  2. Run Jobs:
-      * Clicking on 'Run All' will execute all jobs created.
-  3. Delete Jobs:
-      * Using your mouse, select a job.
+      * Alter values as required and click 'Add' to create more jobs.
+  2. Run jobs:
+      * Clicking on 'Run All' will execute all jobs sequentially.
+  3. Delete jobs:
+      * Using your mouse, select a job row.
       * Click Delete.
-  4. Update Job:
-      * select the job and click 'Select'
-      * alter values as required.
+  4. Update job:
+      * Select the job and click 'Select'.
+      * Alter values as required.
       * Click 'Update'.
 
 **Note**: When running MotionCor2, Gctf or Gautomatch from any of these tabs, the programs behave as if they had been executed on the command line.
 
-For a single program execution or job, all output, errors and Arguments are written to the fields, 'Standard output', 'Standard Error' and 'Arguments'.
+For a single program execution or job, all output, errors and Arguments are written to the fields, 'Standard output', 'Standard Error' and 'Arguments' displayed on the 'Job Output' tab.
 
 The values from these fields are also written to files in the destination folder for your reference.  These files are appended for each program run.
 
@@ -79,15 +124,15 @@ _programName_-output.txt
   ![Image of Stdout, Stderr and Argument fields](./images/outputs.png)
 
 
-#### Workflow Mode
+#### Workflow mode
 
 Workflow mode has been built to allow processing using all the options for MotionCor2, Gctf and Gautomatch while maintaining compatibility with the Relion 2 directory structure.
 
-  ![Image of Workflow mode](./images/workflow-workflow.png)
+  ![Image of Workflow mode](./images/workflowWorkflow.png)
 
 Ensure you have no 'Jobs' created in 'Single' mode as they will cause the 'Workflow' process to behave unexpectedly. e.g. file paths may be incorrect to maintain compatibility with the Relion workflow.
 
-1. To enable 'Workflow' mode, click on 'Workflow'. This will protect and default values into certain fields for each of the three programs. e.g. all Output fields are pre populated and protected.
+1. Click on the 'Workflow' button. This will protect and default values into certain fields for each of the three programs. e.g. all Output fields are pre populated and protected.
 
 2. Add the full path of your Relion project to 'Project Directory'
 
@@ -97,15 +142,17 @@ Ensure you have no 'Jobs' created in 'Single' mode as they will cause the 'Workf
 
   ![Image of Input .star file](./images/inputStarFile.png)
 
-  **Note**: We are assuming you have used the Relion Import function to create the .star file.
+  **Assumption:** Relion 'Import' function is used to create the .star file.
 
 4. Create jobs for Motion Correction, Contrast Transfer Function and Auto Particle Picking.
 
 5. Click on 'Run all jobs'. This will execute all Motion Correction jobs. It will then run all Contrast Transfer Function jobs using the output from the Motion Correction jobs as input and lastly, Auto Particle picking will run all jobs using the output from the Motion Correction jobs as input.
 
-6. All workflow jobs can be loaded and saved to disk by clicking on the 'Load Jobs' and 'Save Jobs' buttons. The file 'workflowJobs.data' will be created in the Project Directory. This feature allows you to develop a set of jobs, known to produce quality output to reuse on future datasets.
+6. All workflow jobs can be loaded and saved to disk by clicking on the 'Load jobs' and 'Save jobs' buttons. The file 'workflowJobs.data' will be created in the Project Directory. This feature allows you to develop a set of jobs, known to produce quality output to reuse on future datasets.
 
   ![Image of Input load and save](./images/loadSaveJobs.png)
+
+  **Note:** Loading and saving of jobs can be used in single workflow mode. 'Project Directory' is where the file 'workflowJobs.data' will be stored.
 
 ##### Workflow output
 
@@ -126,7 +173,7 @@ The directories: mc1, mc2, ctf1, ctf2, pick1 and pick2 are the jobs created.
 
 ![Image of jobs](./images/jobs.png)
 
-'NBMotionCorr/mc1/Micrographs/' and 'NBMotionCorr/mc2/Micrographs/' contain the output files from motioncor2.
+'NBMotionCorr/mc1/Micrographs/' and 'NBMotionCorr/mc2/Micrographs/' contain the output files from motioncor for the jobs mc1 and mc2.
 
 ```
 MotionCor2 output files:
@@ -134,7 +181,7 @@ MotionCor2 output files:
   Falcon_2012_06_12-14_33_35_0.mrc
 ```
 
-'NBCtfFind/ctf1/Micrographs/' and 'NBCtfFind/ctf2/Micrographs/' contain symlinks to all output files from motioncor2 for jobs mc1 and mc2, plus the output from gctf for the jobs 'ctf1' and 'ctf2'. __Note: Only none dose weighted output files from motioncor2 are used as input to gctf.__
+'NBCtfFind/ctf1/Micrographs/' and 'NBCtfFind/ctf2/Micrographs/' contain symlinks to all non dose weighted files from motioncor2 for jobs mc1 and mc2, plus the output from gctf for the jobs 'ctf1' and 'ctf2'. __Note: Only non dose weighted output files from motioncor2 are used as input to gctf.__
 
 ```
 Gctf output files:
@@ -148,7 +195,7 @@ Gctf output files:
   mc2-Falcon_2012_06_12-14_33_35_0.mrc
 ```
 
-'NBAutoPick/pick1/Micrographs/' and 'NBAutoPick/pick2/Micrographs/' contain symlinks to all output files from motioncor2 for jobs mc1 and mc2, plus the output from gautomatch for the jobs 'pick1' and 'pick2'. __Note: Only none dose weighted output files from motioncor2 are used as input.__
+'NBAutoPick/pick1/Micrographs/' and 'NBAutoPick/pick2/Micrographs/' contain symlinks to all non dose weighted files from motioncor2 for jobs mc1 and mc2, plus the output from gautomatch for the jobs 'pick1' and 'pick2'. __Note: Only non dose weighted output files from motioncor2 are used as input.__
 
 ```
 Gautomatch output files:
@@ -198,39 +245,38 @@ class motionCorrection:
 
 ### CTF Review
 
-CTF Review allows you to display, review, filter and save the filtered micrographs as a .star file ready for continued analysis inside Relion.
+CTF Review allows the output from Gctf to be displayed, reviewed, filtered and saved as a .star file ready for continued analysis inside Relion.
 
-![Image of CTF Review](./images/reviewStart.png)
+  1. Click on 'Start Review'. This requires the 'Project Directory' to be completed in the 'Workflow' tab. The program then determines the existing CTF jobs.
 
-Click on 'Start Review'. This requires the 'Project Directory' to be completed in the 'Workflow' tab. The program then determines the existing CTF jobs.
+  ![Image of CTF Review](./images/reviewStart.png)
 
-![Image of CTF Review Jobs](./images/reviewJobs.png)
+  2. A list of available jobs is displayed, the total number of micrographs for each job, fields for filtering results, ordering the results and the total number of filtered micrographs.
 
-A list of available jobs is displayed, the total number of micrographs for each job, fields for filtering results, ordering the results and the total number of filtered micrographs.
+  ![Image of CTF Review Jobs](./images/reviewJobs.png)
 
-Alter the filter fields and order as required, click 'Apply'.
-This will recalculate the total number of CTF micrographs to be displayed.
-You may wish to complete this step where there are thousands of micrographs. Displaying all of them may require you to wait as they are all loaded, then displayed.
+  3. Alter the filter fields and order as required, click 'Apply'.
 
-![Image of CTF Review filters](./images/reviewFiltered.png)
+  This will recalculate the total number of CTF micrographs to be displayed. You may wish to complete this step where there are thousands of micrographs. Displaying all of them may require considerable processing time.
 
-Click 'Review' to display the CTF micrographs.
+  ![Image of CTF Review filters](./images/reviewFiltered.png)
 
-![Image of CTF Review micrographs](./images/reviewCtfs.png)
+  4. Click 'Review' to display the CTF micrographs.
 
-For each CTF micrograph, the data can be viewed by clicking on the 'Data' button.
+  ![Image of CTF Review micrographs](./images/reviewCtfs.png)
 
-![Image of CTF Data](./images/reviewData.png)
+  5. For each CTF micrograph, the data can be viewed by clicking on the 'Data' button.
 
-OR view the input to CTF by clicking on the 'Raw mrc' button.
+  ![Image of CTF Data](./images/reviewData.png)
 
-![Image of CTF Review - input micrograph](./images/reviewRaw.png)
+  OR view the input to CTF by clicking on the 'Raw mrc' button.
 
-#### Saving
+  ![Image of CTF Review - input micrograph](./images/reviewRaw.png)
 
-To refilter, just alter the 'from' and 'to' values, click 'Apply', then 'Review'.
+  6. Repeat steps 3. and 4. until a list of desired micrographs is displayed.
 
-Repeat this step until the desired results are displayed.
-When ready, clicking 'Save' will create a 'selected_micrographs_ctf.star' file inside the 'job' folder.
+  7. When ready, clicking 'Save' creates a 'selected_micrographs_ctf.star' file inside the 'job' folder. This file can be used to continue processing inside Relion on the filtered micrographs.
 
-e.g. relionProjectDirectoryPath/NBCtfFind/ctf1/selected_micrographs_ctf.star
+```
+relionProjectDirectoryPath/NBCtfFind/ctf1/selected_micrographs_ctf.star
+```
