@@ -5,6 +5,7 @@ The Cryo-EM Processing Tool runs as a JupyterLab Notebook on the CVL@M3 Desktop.
 If you have already installed the Cryo-EM Processing Tool go to the [User guide for the Cryo-EM Processing Tool](./userGuide.md) page for information on using the tool.
 
 Start your CVL@M3 Desktop. An 'Advanced' Desktop is recommended to gain suitable GPU performance.  
+
 For further information on accessing and using a CVL Desktop go to the CVL website's [Getting started on the CVL@M3 Desktop](https://www.cvl.org.au/cvl-desktop/getting-started-with-the-cvl) page.
 
 1. Clone the GitHub repository.
@@ -40,7 +41,7 @@ For further information on accessing and using a CVL Desktop go to the CVL websi
   module load gautomatch/0.56
   ```
 
-6. Start JupyterLab. This will cause your web browser to open and display JupyterLab. If you are not familiar with JupyterLab, please refer to the [documentation.](https://jupyterlab.readthedocs.io/en/stable/)
+6. Start JupyterLab. This will cause your web browser to open and display JupyterLab. If you are not familiar with JupyterLab, refer to the [documentation.](https://jupyterlab.readthedocs.io/en/stable/)
 
   ```
   jupyter lab

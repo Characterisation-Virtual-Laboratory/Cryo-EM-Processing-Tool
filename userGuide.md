@@ -13,8 +13,7 @@ Installing the Cryo-EM Processing Tool involves a few easy steps: setting up a P
 
 ## Running the tool
 
-Follow these instructions if you have previously installed.
-Ensure your MASSIVE Desktop is running.
+The following instructions for running the tool assume you have installed it (see section above for instructions) and that your MASSIVE Desktop is running.
 
 1. Activate the virtual environment
 
@@ -30,7 +29,7 @@ Ensure your MASSIVE Desktop is running.
   module load gautomatch/0.56
   ```
 
-3. Start JupyterLab. This will cause your web browser to open showing JupyterLab. If you are not familiar with JupyterLab, please refer to the [documentation.](https://jupyterlab.readthedocs.io/en/stable/)
+3. Start JupyterLab. This will cause your web browser to open showing JupyterLab. If you are not familiar with JupyterLab,  refer to the [documentation.](https://jupyterlab.readthedocs.io/en/stable/)
 
   ```
   jupyter lab
