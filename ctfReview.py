@@ -279,11 +279,17 @@ class ctfReview:
 
         #obtaining values from _gctf.log files
         for infile in glob.glob(projectDirectory + gctfFolderName + jobFolder + 'Micrographs/*_gctf.log'):
-            path, fileName = os.path.split(infile)
-            fileHandle = open(infile)
-            lineList = fileHandle.readlines()
-            fileHandle.close()
-
+            
+            try: 
+                path, fileName = os.path.split(infile)
+                fileHandle = open(infile)
+                lineList = fileHandle.readlines()
+                fileHandle.close()
+            except OSError as err:
+                self.errorText.value = "Error reading *_gctf.log data: {0}".format(err)       
+                self.errorText.layout = self.errorLayout
+                break
+                
             mrc = {}
             mrc['ctfImage'] = gctfFolderName + jobFolder + 'Micrographs/' + fileName.replace('_gctf.log', '.ctf:mrc')
 
@@ -326,7 +332,13 @@ class ctfReview:
 
         #populating source micrograph paths
         for infile in glob.glob(projectDirectory + gctfFolderName + jobFolder + 'Micrographs/*.mrc'):
-            symLinkTarget = os.readlink(infile)
+
+            try:
+                symLinkTarget = os.readlink(infile)
+            except OSError as err:
+                self.errorText.value = "Error reading symlink: {0}".format(err)       
+                self.errorText.layout = self.errorLayout
+                break
 
             splitFilePath = symLinkTarget.rsplit('/', 4)
             micrographNameNoDW = splitFilePath[1] + '/' + splitFilePath[2] + '/' + splitFilePath[3] + '/' + splitFilePath[4]
@@ -369,7 +381,8 @@ class ctfReview:
                 fOutput.write(micrographs[j]['micrographNameNoDW'] + '    ' + micrographs[j]['micrographName'] + '    ' + micrographs[j]['ctfImage'] + '    ' + str(micrographs[j]['defocusU']) + '    ' + str(micrographs[j]['defocusV']) + '    ' + str(micrographs[j]['defocusAngle']) + '    ' + str(micrographs[j]['voltage']) + '    ' + str(micrographs[j]['sphericalAberration']) + '    ' + str(micrographs[j]['ampContrast']) + '    ' + str(micrographs[j]['magnification']) + '    ' + str(micrographs[j]['detectorPixelSize']) + '    ' + str(micrographs[j]['figOfMerit']) + '\n')
 
         except OSError as err:
-            self.stderr.value = "Error writing Job Output: {0}".format(err)
+            self.errorText.value = "Error writing Job Output: {0}".format(err)
+            self.errorText.layout = self.errorLayout
         else:
             fOutput.close()
 
@@ -413,7 +426,8 @@ class ctfReview:
                         mrc = mrcfile.mmap(self.projectDirectory.value + fileName, permissive=True)
 
                 except FileNotFoundError as err:
-                    print("Unable to load Micrograph: {0}".format(err) + '\n')
+                    self.errorText.value = "Unable to load Micrograph: {0}".format(err)
+                    self.errorText.layout = self.errorLayout
                 else:
                     mrcArray = np.array(mrc.data)
                     #extract data, convert values to 0 - 255 int8 format
