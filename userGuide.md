@@ -18,7 +18,7 @@ The following instructions for running the tool assume you have installed it (se
 1. Activate the virtual environment
 
   ```
-  source Cryo-Em-Processing-Tool/bin/Activate
+  source Cryo-EM-Processing-Tool/bin/activate
   ```
 
 2. Load required HPC modules:
