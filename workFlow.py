@@ -1,6 +1,11 @@
+import glob
+import math
+import matplotlib.pyplot as plt
+import numpy as np
 import os
 import pickle
 import ipywidgets as widgets
+import threading
 from ipywidgets import HBox, VBox, Box, Label, Layout
 
 #Workflow processing for all programs and jobs.
@@ -18,7 +23,7 @@ class workFlow:
     basicLayout   = Layout(width='60%')
     errorLayout    = Layout(width='60%', border='2px solid red')
 
-    #Input fields for Motion Correction
+    #Input fields for Workflow
     projectDirectory = widgets.Text(
         description='Project Directory: ',
         placeholder='Relion project directory',
@@ -72,9 +77,51 @@ class workFlow:
         description='Progress:', 
         bar_style='', 
         orientation='horizontal')    
-    #
-    ## Job Maintenance fields
-    #  --start--
+
+    displayGraphs = widgets.RadioButtons(
+            options=(['Disable', 'Enable']),
+            description='Display graphs:',
+            value='Enable',
+            tooltip='Display graphs after job run',
+            disabled=False,
+            style=styleBasic)    
+
+    graphBox = widgets.Output(
+        layout={'border': '2px solid black'})
+    
+    ## AutoRun fields - thread control
+    ## Start
+    enableAutoRun = widgets.RadioButtons(
+            options=(['Disable', 'Enable']),
+            description='Auto run:',
+            disabled=False,
+            style=styleBasic)
+
+    startAutoRun = widgets.Button(
+        description='Start auto run',
+        description_tooltip='Start auto execution',
+        disabled=False,
+        style=styleBasic)
+
+    runDelay = widgets.IntText(
+        value=5,
+        description='Pause run (mins): ',
+        description_tooltip='Auto run after a pause in minutes',
+        disabled=False,
+        style=styleBasic)
+
+    stopAutoRun = widgets.Button(
+        description='Stop auto run',
+        description_tooltip='Stop auto execution',
+        disabled=False,
+        style=styleBasic)    
+
+    #thread performing autoRun
+    threadAutoRun  = None
+    #thread event - controls running of the thread e.g. stop/start.
+    threadAutoRun_stop = threading.Event()
+    
+    ## End
     
     ##Debug assistance
     debug = widgets.Output(
@@ -111,6 +158,10 @@ class workFlow:
     #Load all jobs from file
     @debug.capture(clear_output=True)
     def loadJobs(self, target):
+        
+        if  self.projectDirectory.value.endswith('/') == False:
+            self.projectDirectory.value += '/'
+            
         self.errorText.layout = self.basicLayout
         #read the list, unpickle it.
         try:
@@ -159,6 +210,9 @@ class workFlow:
         allJobs.append(mcListedJobs)
         allJobs.append(gctfListedJobs)
         allJobs.append(gautoListedJobs)
+
+        if  self.projectDirectory.value.endswith('/') == False:
+            self.projectDirectory.value += '/'        
         
         self.errorText.layout = self.basicLayout
         #saving the list - pickle it.
@@ -275,11 +329,76 @@ class workFlow:
                 #gautomatch uses motionCorr output for processing
                 self.gautomatch.runAllWorkflowJobs(self.projectDirectory.value, self.motionCorrFolderName)
                 self.runProgress.value = 4    
+                
+                self.graphBox.clear_output()
+                if  self.displayGraphs.value == 'Enable':
+                    self.buildGraphs()
         else:
             self.errorText.value = "Must be in 'workflow' mode, ensure all jobs created in this mode"
             self.errorText.layout = self.errorLayout
+
+    # buildGraphs() - display a histogram for each ctf job.
+    #
+    @debug.capture(clear_output=True)
+    def buildGraphs(self):
+        ctfStarFilePath = glob.glob(self.projectDirectory.value + self.gctfFolderName + '*/micrographs_ctf.star')
         
-    # on_click() - handle actions for the Mode button    
+        if  len(ctfStarFilePath) > 0:
+            rowItemMax = 2
+            maxRows = math.ceil(len(ctfStarFilePath) / rowItemMax)
+
+            plt.close('all')
+            fig, axes = plt.subplots(nrows=maxRows, ncols=rowItemMax)
+
+            for i in range(len(ctfStarFilePath)):
+                split = ctfStarFilePath[i].rsplit('/', 2)
+                #create a numpy array from .star file using col 12 MaxCtfResolution
+                ctfData = np.loadtxt(ctfStarFilePath[i], skiprows=17, usecols=12)
+
+                axes[i].set_title("Job: " + split[1])
+                axes[i].set_ylabel('Probablity')
+                axes[i].set_xlabel("Max CTF resolution (A)")
+                axes[i].hist(ctfData, bins=50, density=True, histtype='bar',  facecolor='xkcd:nasty green', alpha=0.75)
+
+            fig.tight_layout(pad=1, w_pad=1, h_pad=1)
+
+            with self.graphBox:
+                plt.show()
+            
+    ## AutoRun thread functions
+    ##
+    # buttonStartAutoRun() - start/restart auto run processing
+    #    Argument - change - not used, exists to cater for ipywidget button actions.
+    # 
+    @debug.capture(clear_output=True)    
+    def buttonStartAutoRun(self, change):
+        #check for restart, if thread event flag is set, clear it so thread can be restarted
+        if  self.threadAutoRun_stop.isSet():
+            self.threadAutoRun_stop.clear()
+        #allocate new thread and start it. 
+        # When AutoRun is stopped, the thread completes processing and terminates, so a new one is required
+        self.threadAutoRun  = threading.Thread(target=self.executeAutoRun, args=(1, self.threadAutoRun_stop)) 
+        self.threadAutoRun.start()
+
+    # buttonStopAutoRun() - stop auto run processing
+    #    Argument - change - not used, exists to cater for ipywidget button actions.
+    # 
+    @debug.capture(clear_output=True)    
+    def buttonStopAutoRun(self, change):
+        #set Event flag to stop the looping in executeAutoRun()
+        self.threadAutoRun_stop.set()
+
+    # executeAutoRun() - execute runWorkflowJobs and then pause for runDelay
+    #    Argument - change - not used, exists to cater for ipywidget button actions.
+    # 
+    @debug.capture(clear_output=True)    
+    def executeAutoRun(self, arg, threadEvent):
+        while not threadEvent.is_set():
+            self.runWorkflowJobs('')
+            threadEvent.wait(self.runDelay.value * 60)
+    #End
+            
+    # on_click() - handle actions for the Mode button, enable/disable AutoRun  
     #
     @debug.capture(clear_output=True)
     def on_click(self, change):
@@ -290,6 +409,25 @@ class workFlow:
         if  self.mode.value == 'Workflow':
             self.workflowProcess()
             
+        if  self.enableAutoRun.value == 'Enable':
+            self.startAutoRun.disabled = False
+            self.stopAutoRun.disabled  = False
+            self.runDelay.disabled     = False
+
+        if  self.enableAutoRun.value == 'Disable':
+            self.startAutoRun.disabled = True
+            self.stopAutoRun.disabled  = True
+            self.runDelay.disabled     = True
+            #Disabling, so stop autoRun if running.
+            self.buttonStopAutoRun('')            
+
+    # on_click() - handle click actions for the displayGraphs radio button
+    @debug.capture(clear_output=True)
+    def on_click(self, change):
+        if  self.displayGraphs.value == 'Disable':
+            self.graphBox.clear_output()
+    
+    
     # buildInputWidgets() - write all the workflow fields to the screen.
     #
     @debug.capture(clear_output=True)
@@ -298,19 +436,21 @@ class workFlow:
         self.loadButton.on_click(self.loadJobs)
         self.saveButton.on_click(self.saveJobs)
         self.runAllButton.on_click(self.runWorkflowJobs)
+        self.startAutoRun.on_click(self.buttonStartAutoRun)
+        self.stopAutoRun.on_click(self.buttonStopAutoRun)
+        
+        self.displayGraphs.observe(self.on_click, 'value')
 
-        self.mode.observe(self.on_click, 'value')    
-        
         jobButtons = HBox([self.loadButton, self.saveButton, self.errorText])
-        runBox = HBox([self.runAllButton, self.runProgress])
+        runBox     = HBox([self.runAllButton, self.runProgress])
+        autoRunBox = HBox([self.enableAutoRun, self.startAutoRun, self.runDelay, self.stopAutoRun])
         
-        advBoxLayout = Layout(display='flex',
-                            flex_flow='row',
-                            align_items='stretch',
-                            border='none',
-                            width='100%')
+        self.mode.observe(self.on_click, 'value')    
+        self.enableAutoRun.observe(self.on_click, 'value')
+        #Disable AutoRun fields at startup
+        self.on_click('Disable')
         
         if  self.showDebug:
-            return VBox([self.debug, self.debugText, self.mode, self.projectDirectory, jobButtons, runBox])
+            return VBox([self.debug, self.debugText, self.mode, self.projectDirectory, jobButtons, runBox, autoRunBox, self.displayGraphs, self.graphBox])
         else:
-            return VBox([self.mode, self.projectDirectory, jobButtons, runBox])
+            return VBox([self.mode, self.projectDirectory, jobButtons, runBox, autoRunBox, self.displayGraphs, self.graphBox])

@@ -10,6 +10,7 @@ class contrastTransFunc:
     program = 'Gctf-v1.06_sm_20_cu8.0_x86_64'
     jobPrefix = 'ctf'
     header = [("Job# | inMrc | outMrc | spherAberration | voltage | ampContrast | pixelSize | gpu | enablePhasePlate |phaseShiftLow | phaseShiftHigh | phaseShiftStep | phaseShiftTarget | estAstigmation | boxSize | resLowest | resHighest | defocusLow | defocusHigh | defocusStep | detectorSize | bfac | doEquiPhaseAvg | oversampFactorEPA | overlap | convsize | doHighResRefinement | highResRefinement_lowRes | highResRefinement_highRes | highResRefinement_bfac | bfacEstLow | bfacEstHigh | frameCtfRefinement | frameCtfAverage | frameCtfFitting | frameCtfAverageType | localDefocusRefinement | localDefocusRadius | localDefocusAveType | localDefocusBoxsize | localDefocusOverlap | localDefocusLowRes | localDefocusHighRes | localDefocusAstm | userCtfInputRefine | userCtfDefocusU | userCtfDefocusV | userCtfDefocusA | userCtfBfactor | userCtfDefocusUError | userCtfDefocusVError | userCtfDefocusAError | userCtfBfactorError | doPhaseFlip | doValidation | ctfDiag_lowRes | ctfDiag_highRes | ctfDiag_Bfact | inputCTFstar | boxSuffix | outputCTFstar | logSuffix | writePowerSpectrumFile | plotResRing | doUnfinished | skipMRCcheck | skipGPUcheck ")]
+    starFileName  = 'micrographs_ctf.star'
     
     #style and Layout
     styleBasic    = {'description_width': '160px'}
@@ -20,7 +21,7 @@ class contrastTransFunc:
     
     #Input fields for Gctf
     jobNumber = widgets.Text(
-        description='Job No: ',
+        description='Job no: ',
         disabled=True,
         style=styleBasic,
         layout=basicLayout)
@@ -46,7 +47,7 @@ class contrastTransFunc:
         min=0,
         max=10,
         step=0.1,
-        description='Spherical Aberration (mm): ',
+        description='Spherical aberration (mm): ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -66,7 +67,7 @@ class contrastTransFunc:
         min=0,
         max=0.5,
         step=0.01,
-        description='Amplitutde Contrast: ',
+        description='Amplitutde contrast: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -79,7 +80,7 @@ class contrastTransFunc:
         min=0,
         max=5.0,
         step=0.01,
-        description='Pixel Size (A): ',
+        description='Pixel size (A): ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -90,7 +91,7 @@ class contrastTransFunc:
     gpu = widgets.Text(
         value='',
         placeholder='indicate the GPUs to use',
-        description='GPU Usage: ',
+        description='GPU usage: ',
         disabled=False,
         style=styleBasic,
         layout=basicLayout)
@@ -101,7 +102,7 @@ class contrastTransFunc:
         min=0.0,
         max=360,
         step=0.1,
-        description='Phase Shift - Lowest (degrees): ',
+        description='Phase shift - lowest (degrees): ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -114,7 +115,7 @@ class contrastTransFunc:
         min=0.0,
         max=360,
         step=0.1,
-        description='Phase Shift - Highest (degrees): ',
+        description='Phase shift - highest (degrees): ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -127,7 +128,7 @@ class contrastTransFunc:
         min=0.0,
         max=10,
         step=0.1,
-        description='Phase Shift - Step: ',
+        description='Phase shift - step: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -138,7 +139,7 @@ class contrastTransFunc:
     #default to Resolution limit to ensure Ctf Max Resolution value is calculated.
     phaseShiftTarget = widgets.Select(
         options=[('CCC', '1'), ('Resolution limit', '2')],
-        description='Phase Shift Target ',
+        description='Phase shift target ',
         value='2',
         disabled=False,
         rows=2,
@@ -147,7 +148,7 @@ class contrastTransFunc:
 
     phaseShiftTargetMulti = widgets.SelectMultiple(
         options=[('CCC', '1'), ('Resolution limit', '2')],
-        description='Phase Shift Target ',
+        description='Phase shift target ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -163,49 +164,49 @@ class contrastTransFunc:
     ##Additional options
     estAstigmation = widgets.IntText(
         value=1000,
-        description='Est Astigmation (A): ',
+        description='Est astigmation (A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     boxSize = widgets.IntText(
         value=1024,
-        description='Box Size (pixel): ',
+        description='Box size (pixel): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     resLowest = widgets.IntText(
         value=50,
-        description='Lowest Resolution (A): ',
+        description='Lowest resolution (A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     resHighest = widgets.IntText(
         value=4,
-        description='Highest Resolution (A): ',
+        description='Highest resolution (A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     defocusLow = widgets.IntText(
         value=5000,
-        description='Lowest Defocus (A): ',
+        description='Lowest defocus (A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     defocusHigh = widgets.IntText(
         value=90000,
-        description='Highest Defocus (A): ',
+        description='Highest defocus (A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     defocusStep = widgets.IntText(
         value=500,
-        description='Defocus Step (A): ',
+        description='Defocus step (A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -233,7 +234,7 @@ class contrastTransFunc:
     ##Advanced Additional options
     doEquiPhaseAvg = widgets.Select(
         options=[('No', 0), ('Yes', 1)],
-        description='Do Equi Phase Average: ',
+        description='Do equi phase average: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -244,7 +245,7 @@ class contrastTransFunc:
         min=0,
         max=20,
         step=1,
-        description='EPA - Oversamp Factor: ',
+        description='EPA - oversamp factor: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -257,7 +258,7 @@ class contrastTransFunc:
         min=0,
         max=1,
         step=0.1,
-        description='Overlapping Factor: ',
+        description='Overlapping factor: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -281,7 +282,7 @@ class contrastTransFunc:
     #High resolution refinement options
     doHighResRefinement = widgets.Select(
         options=[('No', 0), ('Yes', 1)],
-        description='High Res Refinement: ',
+        description='High res refinement: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -289,21 +290,21 @@ class contrastTransFunc:
 
     highResRefinement_lowRes = widgets.FloatText(
         value=15.0,
-        description='High Res Refine-Low Res(A): ',
+        description='High res refine-low res(A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     highResRefinement_highRes = widgets.FloatText(
         value=4.0,
-        description='High Res Refine-High Res(A): ',
+        description='High res refine-high res(A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     highResRefinement_bfac = widgets.IntText(
         value=50,
-        description='High Res Refine-bfac(A^2): ',
+        description='High res refine-bfac(A^2): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -414,14 +415,14 @@ class contrastTransFunc:
     
     localDefocusLowRes = widgets.IntText(
         value=15,
-        description='Lowest Resolution (A): ',
+        description='Lowest resolution (A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
     
     localDefocusHighRes = widgets.IntText(
         value=5,
-        description='Highest Resolution (A): ',
+        description='Highest resolution (A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -438,7 +439,7 @@ class contrastTransFunc:
     ##CTF refinement options
     userCtfInputRefine = widgets.Select(
         options=[('No', 0), ('Yes', 1)],
-        description='User CTF Refinement: ',
+        description='User CTF refinement: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -446,49 +447,49 @@ class contrastTransFunc:
     
     userCtfDefocusU = widgets.FloatText(
         value=20000.0,
-        description='Initial Defocus U: ',
+        description='Initial defocus U: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
     
     userCtfDefocusV = widgets.FloatText(
         value=20000.0,
-        description='Initital Defocus V: ',
+        description='Initital defocus V: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
     
     userCtfDefocusA = widgets.FloatText(
         value=0.0,
-        description='Initial Defocus Angle: ',
+        description='Initial defocus angle: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
     
     userCtfBfactor = widgets.FloatText(
         value=200.0,
-        description='Initial Bfactor: ',
+        description='Initial bfactor: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
     
     userCtfDefocusUError = widgets.FloatText(
         value=500.0,
-        description='Initial Defocus U est. error: ',
+        description='Initial defocus U est. error: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
     
     userCtfDefocusVError = widgets.FloatText(
         value=500.0,
-        description='Initial Defocus V est. error: ',
+        description='Initial defocus V est. error: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
     
     userCtfDefocusAError = widgets.FloatText(
         value=15.0,
-        description='Initial Defocus Angle est. error: ',
+        description='Initial defocus angle est. error: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -503,7 +504,7 @@ class contrastTransFunc:
     ##Correction options
     doPhaseFlip = widgets.Select(
         options=[('No', 0), ('Yes', 1)],
-        description='Flip Phase ?: ',
+        description='Flip phase ?: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -521,21 +522,21 @@ class contrastTransFunc:
     ##CTF output file options
     ctfDiag_lowRes =  widgets.FloatText(
         value=100.0,
-        description='CTF Diagnosis-Low Res: ',
+        description='CTF diagnosis-low res: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     ctfDiag_highRes = widgets.FloatText(
         value=2.8,
-        description='CTF Diagnosis-High Res: ',
+        description='CTF diagnosis-high res: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     ctfDiag_Bfact = widgets.IntText(
         value=50,
-        description='CTF Diagnosis - Bfactor: ',
+        description='CTF diagnosis - Bfactor: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -568,7 +569,7 @@ class contrastTransFunc:
     logSuffix = widgets.Text(
         value='',
         placeholder='_gctf.log',
-        description='Log file Suffix:',
+        description='Log file suffix:',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -585,7 +586,7 @@ class contrastTransFunc:
     plotResRing = widgets.Select(
         options=[('No', 0), ('Yes', 1)],
         value=1,
-        description='Plot Est. Resolution Ring?: ',
+        description='Plot est. resolution ring?: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -593,7 +594,7 @@ class contrastTransFunc:
 
     doUnfinished  = widgets.Select(
         options=[('No', 0), ('Yes', 1)],
-        description='Continue Processing: ',
+        description='Continue processing: ',
         value=1,
         disabled=False,
         rows=2,
@@ -625,7 +626,7 @@ class contrastTransFunc:
 
     enablePhasePlate = widgets.RadioButtons(
         options=['Disable', 'Enable'], 
-        description='Enable Phase Plate Processing:', 
+        description='Enable phase plate processing:', 
         disabled=False,
         style=styleAdvanced, 
         layout=advLayout)
@@ -816,7 +817,7 @@ class contrastTransFunc:
 
     # buildJob() - construct a single job containing all arguments.
     #    Arguments:
-    #        phaseShiftTargetValue - use the phaseShiftTarget is specified, otherwise use screen value
+    #        phaseShiftTargetValue - use the phaseShiftTarget if specified, otherwise use screen value
     #        jobNo - the next job number to use
     #    Return:
     #        dict containing all arguments.
@@ -998,9 +999,6 @@ class contrastTransFunc:
         if  jobToProcess['gpu']:
             args += " --gid " + jobToProcess['gpu']            
 
-        #Only add aguments if enablePhasePlate == 'Yes'
-        #Jay need to store this value with the job so job maintenace works.
-        
         if  jobToProcess['enablePhasePlate'] == 'Enable':
             if  jobToProcess['phaseShiftLow']:
                 args += " --phase_shift_L " + str(jobToProcess['phaseShiftLow'])
@@ -1179,7 +1177,6 @@ class contrastTransFunc:
         micrographs = glob.glob(projectDirectory + motionCorrFolder + '/*/Micrographs/*.mrc')
 
         for i in range(len(micrographs)):
-            
             #The new name combines the motionCorr jobNo with the micrograph name.
             split = micrographs[i].rsplit('/', 3)
             newFileName = split[-3] + '-' + split[-1]
@@ -1192,7 +1189,125 @@ class contrastTransFunc:
                 continue
             else:
                 os.symlink(micrographs[i], newFileName)
-        
+
+    # buildStarFileData() - creates a list of micrographs and associated data required to create a .star file
+    #    Arguments - projectDirectory - relion project directory
+    #              - gctfFolderName   - folder containing gctf jobs e.g. NBCtfFind
+    #              - jobFolder        - folder for the ctf job. e.g. ctf1
+    #    Return a list of Micrographs and associated CTF data
+    #
+    @debug.capture(clear_output=True)
+    def buildStarFileData(self, projectDirectory, gctfFolderName, jobFolder):
+        micrographs = []
+
+        #obtaining values from _gctf.log files
+        for infile in glob.glob(projectDirectory + gctfFolderName + jobFolder + 'Micrographs/*_gctf.log'):
+            try: 
+                path, fileName = os.path.split(infile)
+                fileHandle = open(infile)
+                lineList = fileHandle.readlines()
+                fileHandle.close()
+            except OSError as err:
+                self.errorText.value = "Error reading *_gctf.log data: {0}".format(err)       
+                self.errorText.layout = self.errorLayout
+                break
+                
+            mrc = {}
+            mrc['ctfImage'] = gctfFolderName + jobFolder + 'Micrographs/' + fileName.replace('_gctf.log', '.ctf:mrc')
+
+            lastEntryColumns = ''
+            lastEntryValues  = ''
+
+            for index, obj in enumerate(lineList):
+                if  '--dstep' in lineList[index]:
+                    mrc['detectorPixelSize']   = float(lineList[index].split()[1])
+                if  '--kv' in lineList[index]:
+                    mrc['voltage']             = float(lineList[index].split()[1])
+                if  '--ac' in lineList[index]:
+                    mrc['ampContrast']         = float(lineList[index].split()[1])
+                if  '--cs' in lineList[index]:
+                    mrc['sphericalAberration'] = float(lineList[index].split()[1])
+                if  'XMAG' in lineList[index]:
+                    mrc['magnification']       = float(lineList[index+1].split()[3])
+                if  'Resolution limit estimated' in lineList[index]:
+                    mrc['maxResolution']       = float(lineList[index].rsplit(maxsplit=1)[1])
+                #Depending on how gctf is run, there may be multiple entries for Defocus_U etc - take the last row in the log.
+                if  'Defocus_U   Defocus_V ' in lineList[index]:
+                    lastEntryColumns           = lineList[index]
+                    lastEntryValues            = lineList[index+1]
+
+            #The columns written can vary based on how Gctf is run. e.g. Phase_shift value may or may not be present
+            #Matching values to column names
+            lastColumns = lastEntryColumns.split()
+            lastValues  = lastEntryValues.split()
+            for i in range(len(lastColumns)):
+                if  lastColumns[i] == 'Defocus_U':
+                    mrc['defocusU']     = float(lastValues[i])
+                if  lastColumns[i] == 'Defocus_V':
+                    mrc['defocusV']     = float(lastValues[i])
+                if  lastColumns[i] == 'Angle':
+                    mrc['defocusAngle'] = float(lastValues[i])
+                if  lastColumns[i] == 'CCC':
+                    mrc['figOfMerit']   = float(lastValues[i])
+
+            micrographs.append(mrc)
+
+        #populating source micrograph paths
+        for infile in glob.glob(projectDirectory + gctfFolderName + jobFolder + 'Micrographs/*.mrc'):
+            try:
+                symLinkTarget = os.readlink(infile)
+            except OSError as err:
+                self.errorText.value = "Error reading symlink: {0}".format(err)       
+                self.errorText.layout = self.errorLayout
+                break
+
+            splitFilePath = symLinkTarget.rsplit('/', 4)
+            micrographNameNoDW = splitFilePath[1] + '/' + splitFilePath[2] + '/' + splitFilePath[3] + '/' + splitFilePath[4]
+            micrographName = splitFilePath[1] + '/' + splitFilePath[2] + '/' + splitFilePath[3] + '/' + splitFilePath[4].replace('.mrc', '_DW.mrc')
+
+            jobNumber = splitFilePath[2]
+
+            for i in range(len(micrographs)):
+                # ctfImage = 'NBCtfFind/ctf1/Micrographs/mc2-Falcon_2012_06_12-17_14_17_0.ctf:mrc'
+                splitCtfImage = micrographs[i]['ctfImage'].split('/')
+                ctfJobNumber = splitCtfImage[3].split('-', 1)[0]
+
+                if  jobNumber == ctfJobNumber:
+                    matchFile = splitCtfImage[3].replace(jobNumber + '-', '').replace('.ctf:mrc', '.mrc')
+
+                    if  matchFile == splitFilePath[4]:
+                        micrographs[i]['micrographNameNoDW'] = micrographNameNoDW
+                        micrographs[i]['micrographName'] = micrographName
+                        break
+
+        return micrographs
+
+    # createStar() - Build the ctf star file
+    #    Arguments - projectDirectory - relion project directory
+    #              - gctfFolderName   - folder containing gctf jobs e.g. NBCtfFind
+    #              - jobFolder        - folder for the ctf job. e.g. ctf1
+    #              - micrographs      - a list of micrographs and associated ctf data
+    #              - starFileName     - name of the file to be created
+    #
+    @debug.capture(clear_output=True)
+    def createStar(self, projectDirectory, gctfFolderName, jobFolder, micrographs, starFileName):
+
+        #Create the Star file, write to disk.
+        try:
+            fOutput = open(projectDirectory + gctfFolderName + jobFolder + '/' + starFileName, "w")
+            #write out data_, loop_ (column headers)
+            fOutput.write('\ndata_\n\nloop_\n_rlnMicrographNameNoDW #1 \n_rlnMicrographName #2 \n_rlnCtfImage #3 \n_rlnDefocusU #4 \n_rlnDefocusV #5 \n_rlnDefocusAngle #6 \n_rlnVoltage #7 \n_rlnSphericalAberration #8 \n_rlnAmplitudeContrast #9 \n_rlnMagnification #10 \n_rlnDetectorPixelSize #11 \n_rlnCtfFigureOfMerit #12 \n_nbCtfMaxResolution #13\n')
+
+            #Write out rows
+            for j in range(len(micrographs)):
+                fOutput.write(micrographs[j]['micrographNameNoDW'] + '    ' + micrographs[j]['micrographName'] + '    ' + micrographs[j]['ctfImage'] + '    ' + str(micrographs[j]['defocusU']) + '    ' + str(micrographs[j]['defocusV']) + '    ' + str(micrographs[j]['defocusAngle']) + '    ' + str(micrographs[j]['voltage']) + '    ' + str(micrographs[j]['sphericalAberration']) + '    ' + str(micrographs[j]['ampContrast']) + '    ' + str(micrographs[j]['magnification']) + '    ' + str(micrographs[j]['detectorPixelSize']) + '    ' + str(micrographs[j]['figOfMerit']) + '    ' + str(micrographs[j]['maxResolution']) +'\n')
+
+        except OSError as err:
+            self.errorText.value = "Error writing Job Output: {0}".format(err)
+            self.errorText.layout = self.errorLayout
+        else:
+            fOutput.close()
+            
     # runAllWorkflowJobs() - execute all jobs in the list. Only executed in 'workflow' mode
     #    Arguments:
     #        projectDirectory  - contains the home directory of the Relion project for all jobs.
@@ -1236,6 +1351,9 @@ class contrastTransFunc:
                 else:
                     #build arguments list, run program
                     self.callProgram(self.program, self.buildArgumentsList(listedJobsList[i]), outputFolder)
+                    #create .star file
+                    micrographData = self.buildStarFileData(projectDirectory, listedJobsList[i]['outMrc'], listedJobsList[i]['jobNumber'] + '/')
+                    self.createStar(projectDirectory, listedJobsList[i]['outMrc'], listedJobsList[i]['jobNumber'], micrographData, self.starFileName)
                 self.runProgress.value = i+1           
                 
     # runAllJobs() - execute all jobs in the list.
