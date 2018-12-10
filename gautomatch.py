@@ -20,7 +20,7 @@ class autoPicking:
 
     #Input fields for Motion Correction
     jobNumber = widgets.Text(
-        description='Job No: ',
+        description='Job no: ',
         disabled=True,
         style=styleBasic,
         layout=basicLayout)
@@ -46,7 +46,7 @@ class autoPicking:
         min=0,
         max=4.0,
         step=0.01,
-        description='Pixel Size (A): ',
+        description='Pixel size (A): ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -72,7 +72,7 @@ class autoPicking:
     particlePickingTemplatesMulti = widgets.Text(
         value='',
         placeholder='Use ";" as separator.',
-        description='Particle Pick Templ list: ',
+        description='Particle pick templ list: ',
         disabled=False,
         style=styleBasic,
         layout=basicLayout)
@@ -89,7 +89,7 @@ class autoPicking:
         min=0,
         max=4.0,
         step=0.01,
-        description='Pixel Size Template (A): ',
+        description='Pixel size template (A): ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -100,7 +100,7 @@ class autoPicking:
     pixelSizeTemplateMulti = widgets.Text(
         value='',
         placeholder='Use ";" as separator.',
-        description='Pixel Size Templ list: ',
+        description='Pixel size templ list: ',
         disabled=False,
         style=styleBasic,
         layout=basicLayout)
@@ -126,7 +126,7 @@ class autoPicking:
         min=0,
         max=20,
         step=1,
-        description='Angular Step Size: ',
+        description='Angular step size: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -136,20 +136,20 @@ class autoPicking:
 
     speedLevel = widgets.Select(
         options=[('0', '0'), ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4')],
-        description='Speed Level: ',
+        description='Speed level: ',
         disabled=False,
         value='2',
         style=styleAdvanced,
         layout=advLayout)
 
     boxSize = widgets.IntText(
-        description='Box Size (pixel): ',
+        description='Box size (pixel): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     minDistance = widgets.IntText(
-        description='Minimum Distance (A): ',
+        description='Minimum distance (A): ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -159,7 +159,7 @@ class autoPicking:
         min=0,
         max=1,
         step=0.1,
-        description='Cross Correlation Cutoff: ',
+        description='Cross correlation cutoff: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -168,7 +168,7 @@ class autoPicking:
         layout=advLayout)
 
     localSigmaDiameter = widgets.IntText(
-        description='Local Sigma Diameter (A): ',
+        description='Local sigma diameter (A): ',
         value=200,
         disabled=False,
         style=styleAdvanced,
@@ -179,7 +179,7 @@ class autoPicking:
         min=0,
         max=4,
         step=0.1,
-        description='Local Sigma Cutoff: ',
+        description='Local sigma cutoff: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -188,7 +188,7 @@ class autoPicking:
         layout=advLayout)
 
     localAvgDiameter = widgets.IntText(
-        description='Local Avg Diameter (A): ',
+        description='Local avg diameter (A): ',
         value=400,
         disabled=False,
         style=styleAdvanced,
@@ -199,7 +199,7 @@ class autoPicking:
         min=0,
         max=20,
         step=0.1,
-        description='Local Avg Max Cutoff: ',
+        description='Local avg max cutoff: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -212,7 +212,7 @@ class autoPicking:
         min=-20,
         max=20,
         step=0.1,
-        description='Local Avg Min Cutoff: ',
+        description='Local avg min cutoff: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -225,7 +225,7 @@ class autoPicking:
         min=0,
         max=100,
         step=1,
-        description='Low Pass Filter: ',
+        description='Low pass filter: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -238,7 +238,7 @@ class autoPicking:
         min=0,
         max=10000,
         step=1,
-        description='High Pass Filter: ',
+        description='High pass filter: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -249,7 +249,7 @@ class autoPicking:
     doPreFilter = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
-        description='Do Pre Filter: ',
+        description='Do pre filter: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -260,7 +260,7 @@ class autoPicking:
         min=0,
         max=100,
         step=1,
-        description='Pre Filter - Low Pass: ',
+        description='Pre filter - low pass: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -273,7 +273,7 @@ class autoPicking:
         min=0,
         max=10000,
         step=1,
-        description='Pre Filter - High Pass: ',
+        description='Pre filter - high pass: ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -284,7 +284,7 @@ class autoPicking:
     detectIce = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='1',
-        description='Detect Ice: ',
+        description='Detect ice: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -293,7 +293,7 @@ class autoPicking:
     templateNormType = widgets.Select(
         options=[('1', '1'), ('2', '2'), ('3', '3')],
         value='1',
-        description='Template Norm. type: ',
+        description='Template norm. type: ',
         disabled=False,
         rows=3,
         style=styleAdvanced,
@@ -302,7 +302,7 @@ class autoPicking:
     doBandpassFilter = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='1',
-        description='Do Bandpass Filter: ',
+        description='Do bandpass filter: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -312,7 +312,7 @@ class autoPicking:
     writeCrossCorrelationMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
-        description='Write Cross Correlation: ',
+        description='Write cross correlation: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -321,7 +321,7 @@ class autoPicking:
     writePhaseFlippedMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
-        description='Write Phase Flipped: ',
+        description='Write phase flipped: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -330,7 +330,7 @@ class autoPicking:
     writePreFilteredMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
-        description='Write Pre Filtered: ',
+        description='Write pre filtered: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -339,7 +339,7 @@ class autoPicking:
     writeEstBackgroundMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
-        description='Write Est Background: ',
+        description='Write est background: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -348,7 +348,7 @@ class autoPicking:
     writeBackgroundSubtractedMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
-        description='Write Background Subtracted: ',
+        description='Write background subtracted: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -357,7 +357,7 @@ class autoPicking:
     writeLocalSigmaMrcs = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
-        description='Write Local Sigma: ',
+        description='Write local sigma: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -366,7 +366,7 @@ class autoPicking:
     writeAutoDetectedMask = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
-        description='Write Auto Detected Mask: ',
+        description='Write auto detected mask: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -375,7 +375,7 @@ class autoPicking:
     pickByPreDefinedCoords = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
-        description='Exclusive Picking: ',
+        description='Exclusive picking: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -383,7 +383,7 @@ class autoPicking:
 
     excludedSuffixCoords = widgets.Text(
         placeholder='path for input Relion .star or EMAN .box file containing excluded suffix coordinates',
-        description='Excluded Suffix Coords: ',
+        description='Excluded suffix coords: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -391,7 +391,7 @@ class autoPicking:
     maskExcludedCoords = widgets.Select(
         options=[('No', '0'), ('Yes', '1')],
         value='0',
-        description='Mask Excluded Coords: ',
+        description='Mask excluded coords: ',
         disabled=False,
         rows=2,
         style=styleAdvanced,
@@ -399,7 +399,7 @@ class autoPicking:
 
     globalExcludedCoords = widgets.Text(
         placeholder='path for .star or .box file containing coordinates to exclude from all mrcs',
-        description='Global Excluded Coords: ',
+        description='Global excluded coords: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -546,11 +546,13 @@ class autoPicking:
 
     #Multi value field processing support
     # addParticlePickingTemplateJobs() - add new jobs for all 'Particle Picking Template' values entered
+    #
     @debug.capture(clear_output=True)
     def addParticlePickingTemplateJobs(self, target):
         self.addJobs("particlePickingTemplates", self.particlePickingTemplatesMulti.value)
 
     # addPixelSizeTemplateJobs() - add new jobs for all 'Pixel Size Template' values entered.
+    #
     @debug.capture(clear_output=True)
     def addPixelSizeTemplateJobs(self, target):
         self.addJobs("pixelSizeTemplate", self.pixelSizeTemplate.value)
@@ -583,7 +585,6 @@ class autoPicking:
                             width='150%')
         additional = Box(children=[add1, add2], layout=addBoxLayout)
 
-
         io1 = VBox([HBox([self.writeCrossCorrelationMrcs, self.writePhaseFlippedMrcs]),
                     HBox([self.writePreFilteredMrcs, self.writeEstBackgroundMrcs]),
                     HBox([self.writeBackgroundSubtractedMrcs, self.writeLocalSigmaMrcs]),
@@ -592,12 +593,6 @@ class autoPicking:
                     HBox([self.maskExcludedCoords, self.globalExcludedCoords]),
                     HBox([self.doUnfinished, self.dontInvertTemplateContrast]),
                     HBox([self.extractRawParticle, self.extractPhaseFlipped])])
-        ioBoxLayout = Layout(display='flex',
-                            flex_flow='row',
-                            align_items='stretch',
-                            border='none',
-                            width='150%')
-        #ioOptions = Box(children=[io1, io2], layout=ioBoxLayout)
 
         tab = widgets.Tab(children=[basic, additional, io1])
         tab.set_title(0, 'Basic')
@@ -893,7 +888,7 @@ class autoPicking:
         self.jobNumber.value = ''
 
     # buildSymlinks() - used for 'Workflow' mode. Builds a list of symlinks to output
-    #                   micrographs from motioncorr in preparation for Gctf processing.
+    #                   micrographs from motioncorr in preparation for gautomatch processing.
     #    Arguments:
     #        projectDirectory - contains the home directory of the Relion project for all jobs.
     #        motionCorrFolder - contains the output folder for motionCorr jobs. Used to build symlinks
@@ -954,6 +949,7 @@ class autoPicking:
                     os.chdir(outputFolder)
 
                     #create symlinks to output *.mrc from motionCorr jobs
+                    #these are then used as input to gautomatch
                     self.buildSymlinks(projectDirectory, motionCorrFolder)
 
                 except OSError as err:
