@@ -22,7 +22,7 @@ class motionCorrection:
 
     #Input fields for Motion Correction
     jobNumber = widgets.Text(
-        description='Job No: ',
+        description='Job no: ',
         disabled=True,
         style=styleBasic,
         layout=basicLayout)
@@ -103,7 +103,7 @@ class motionCorrection:
         min=0,
         max=4.0,
         step=0.01,
-        description='Pixel Size (A): ',
+        description='Pixel size (A): ',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -121,7 +121,7 @@ class motionCorrection:
     gpu = widgets.Text(
         value='',
         placeholder='indicate the GPUs to use',
-        description='GPU Usage: ',
+        description='GPU usage: ',
         disabled=False,
         style=styleBasic,
         layout=basicLayout)
@@ -142,7 +142,7 @@ class motionCorrection:
 
     defectFile = widgets.Text(
         placeholder='path for the Defect file that details camera defects',
-        description='DefectFile: ',
+        description='Defect file: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -193,7 +193,7 @@ class motionCorrection:
         min=1,
         max=10,
         step=0.1,
-        description='Binning Factor',
+        description='Binning factor',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -206,7 +206,7 @@ class motionCorrection:
         min=0,
         max=5,
         step=1,
-        description='Initial Dose (e/A2)',
+        description='Initial dose (e/A2)',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -219,7 +219,7 @@ class motionCorrection:
         min=0,
         max=3.0,
         step=0.1,
-        description='Frame Dose (e/A2):',
+        description='Frame dose (e/A2):',
         continuous_update=False,
         orientation='horizontal',
         readout=True,
@@ -259,14 +259,14 @@ class motionCorrection:
     tilt = widgets.Text(
         value='',
         placeholder='specify the starting angle followed by the tilt step. e.g. 0 2',
-        description='Tilt Angle and Step: ',
+        description='Tilt angle and step: ',
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     rotGain = widgets.Select(
         options=[('No rotation - default', 0), ('Rotate 90', 1), ('Rotate 180', 2), ('Rotate 270', 3)],
-        description='Rotate Gain: ',
+        description='Rotate gain: ',
         disabled=False,
         rows=4,
         style=styleAdvanced,
@@ -274,7 +274,7 @@ class motionCorrection:
 
     flipGain = widgets.Select(
         options=[('No flip - default', 0), ('upside down - horizontal axis', 1), ('left right - vertical axis', 2)],
-        description='Flip Gain ',
+        description='Flip gain ',
         disabled=False,
         rows=3,
         style=styleAdvanced,
@@ -327,7 +327,7 @@ class motionCorrection:
         tooltip='Update job.')
 
     runAllButton = widgets.Button(
-        description='Run All',
+        description='Run all',
         disabled=False,
         button_style='',
         tooltip='Run all jobs')
@@ -366,7 +366,7 @@ class motionCorrection:
         style=styleBasic,
         layout=Layout(width='90%'))   
     
-    # __init__() - initialise the class jobMaintenance
+    # __init__() - initialise the class motionCorrection
     #    Arguments:
     #        callProgramFunc - the function for executing the program
     #        showDebug - display debug fields
