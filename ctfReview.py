@@ -17,6 +17,7 @@ class ctfReview:
     thumbNailSize = (256, 256)
     rawThumbNailSize = (256, 256)
     starFileName  = 'selected_micrographs_ctf.star'
+    defaultValue = 99999999
 
     #style and Layout
     styleBasic    = {'description_width': '120px'}
@@ -31,6 +32,13 @@ class ctfReview:
         disabled=False,
         button_style='',
         tooltip='Start CTF review',
+        icon='')
+
+    resetFilterButton = widgets.Button(
+        description='Reset',
+        disabled=False,
+        button_style='',
+        tooltip='Reset',
         icon='')
 
     applyFilterButton = widgets.Button(
@@ -91,7 +99,7 @@ class ctfReview:
 
     defocusUTo = widgets.FloatText(
         description='to: ',
-        value=99999999,
+        value=defaultValue,
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -104,7 +112,7 @@ class ctfReview:
 
     defocusVTo = widgets.FloatText(
         description='to: ',
-        value=99999999,
+        value=defaultValue,
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -117,7 +125,7 @@ class ctfReview:
 
     defocusATo = widgets.FloatText(
         description='to: ',
-        value=99999999,
+        value=defaultValue,
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -130,7 +138,7 @@ class ctfReview:
 
     voltageTo = widgets.FloatText(
         description='to: ',
-        value=99999999,
+        value=defaultValue,
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -143,7 +151,7 @@ class ctfReview:
 
     sphericalAberrationTo = widgets.FloatText(
         description='to: ',
-        value=99999999,
+        value=defaultValue,
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -156,7 +164,7 @@ class ctfReview:
 
     ampContrastTo = widgets.FloatText(
         description='to: ',
-        value=99999999,
+        value=defaultValue,
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -169,7 +177,7 @@ class ctfReview:
 
     magnificationTo = widgets.FloatText(
         description='to: ',
-        value=99999999,
+        value=defaultValue,
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -182,7 +190,7 @@ class ctfReview:
 
     detectPixSizeTo = widgets.FloatText(
         description='to: ',
-        value=99999999,
+        value=defaultValue,
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -195,7 +203,7 @@ class ctfReview:
 
     ctfFigMeritTo = widgets.FloatText(
         description='to: ',
-        value=99999999,
+        value=defaultValue,
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
@@ -208,13 +216,14 @@ class ctfReview:
 
     ctfMaxResTo = widgets.FloatText(
         description='to: ',
-        value=99999999,
+        value=defaultValue,
         disabled=False,
         style=styleAdvanced,
         layout=advLayout)
 
     orderBy = widgets.RadioButtons(
         options=['Defocus U', 'Figure of merit', 'Ctf max resolution'],
+        value='Defocus U',
         description='Order by:',
         disabled=False,
         style=styleBasic,
@@ -253,11 +262,6 @@ class ctfReview:
         style=styleBasic,
         layout=Layout(width='90%'))
 
-    workFlow = None
-    contrastTransfer = None
-    ctfReviewList = []
-    filteredCtfReviewList = []
-
     # __init__() - initialise the class jobMaintenance
     #    Arguments:
     #        workFlow         - an instance of the workFlow class
@@ -269,6 +273,9 @@ class ctfReview:
         self.contrastTransfer = contrastTransfer
         self.showDebug = showDebug
 
+        self.ctfReviewList = []
+        self.filteredCtfReviewList = []
+        
     # convertToPNG() - convert the Image object to a PNG image
     #     Arguments - im - image object
     #
@@ -423,7 +430,7 @@ class ctfReview:
                         HBox([self.ctfFigMeritFrom, self.ctfFigMeritTo]),
                         HBox([self.ctfMaxResFrom, self.ctfMaxResTo]),
                         HBox([self.orderBy, self.totalFilteredMicrographs]),
-                        self.applyFilterButton])
+                        HBox([self.resetFilterButton, self.applyFilterButton])])
 
         tab = widgets.Tab(children=[filters])
         tab.set_title(0, 'Filters')
@@ -445,7 +452,8 @@ class ctfReview:
 
             self.projectDirectory.value = self.workFlow.projectDirectory.value
             self.gctfFolderName.value = self.workFlow.gctfFolderName
-
+                        
+            self.jobsBox.clear_output()
             with self.jobsBox:
                 display(HBox([self.projectDirectory, self.gctfFolderName]),
                         self.buildReviewJobs(), self.buildFilters(), HBox([self.reviewButton, self.saveButton]))
@@ -455,16 +463,15 @@ class ctfReview:
     #
     @debug.capture(clear_output=True)
     def applyFilter(self, target):
-
         df = pd.DataFrame(self.ctfReviewList)
 
         #apply selected order by, ascending
         if  self.orderBy.value == 'Defocus U':
             df.sort_values(by='defocusU', inplace=True)
-        if  self.orderBy.value == 'Figure of Merit':
+        if  self.orderBy.value == 'Figure of merit':
             df.sort_values(by='figOfMerit', inplace=True)
-        if  self.orderBy.value == 'Ctf Max Resolution':
-            df.sort_values(by='defocusU', inplace=True)
+        if  self.orderBy.value == 'Ctf max resolution':
+            df.sort_values(by='maxResolution', inplace=True)
 
         filtered = df.loc[(df['defocusU']     >= self.defocusUFrom.value)     & (df['defocusU']    <= self.defocusUTo.value) &
                           (df['defocusV']     >= self.defocusVFrom.value)     & (df['defocusV']    <= self.defocusVTo.value) &
@@ -479,15 +486,12 @@ class ctfReview:
 
         self.filteredCtfReviewList = filtered
         self.totalFilteredMicrographs.value = len(self.filteredCtfReviewList)
-        return filtered
-
 
     # reviewCtfs() - when clicked builds a list of jobs for review.
     #    @debug.capture causes any exceptions to be displayed in the debug field
     #
     @debug.capture(clear_output=True)
     def reviewCtfs(self, target):
-
         allMicrographs = self.showCtfMicrographs(self.workFlow.projectDirectory.value, self.filteredCtfReviewList)
 
         hBoxes = []
@@ -512,6 +516,33 @@ class ctfReview:
         with self.reviewBox:
             display(VBox(hBoxes))
 
+    # resetFilter() - reset filter to original values
+    #
+    @debug.capture(clear_output=True)
+    def resetFilter(self, target):
+        self.defocusUFrom.value            = 0
+        self.defocusUTo.value              = self.defaultValue
+        self.defocusVFrom.value            = 0
+        self.defocusVTo.value              = self.defaultValue
+        self.defocusAFrom.value            = 0
+        self.defocusATo.value              = self.defaultValue
+        self.voltageFrom.value             = 0
+        self.voltageTo.value               = self.defaultValue
+        self.sphericalAberrationFrom.value = 0
+        self.sphericalAberrationTo.value   = self.defaultValue
+        self.ampContrastFrom.value         = 0
+        self.ampContrastTo.value           = self.defaultValue
+        self.magnificationFrom.value       = 0
+        self.magnificationTo.value         = self.defaultValue
+        self.detectPixSizeFrom.value       = 0
+        self.detectPixSizeTo.value         = self.defaultValue
+        self.ctfFigMeritFrom.value         = 0
+        self.ctfFigMeritTo.value           = self.defaultValue
+        self.ctfMaxResFrom.value           = 0
+        self.ctfMaxResTo.value             = self.defaultValue
+        self.orderBy.value                 = 'Defocus U'
+        self.applyFilter('')
+        
     # saveSelected() - create a star file containing the selected CTFs
     #
     @debug.capture(clear_output=True)
@@ -521,11 +552,14 @@ class ctfReview:
     # on_click() - handle click actions for the jobSelection radio button
     @debug.capture(clear_output=True)
     def on_click(self, change):
+        #reset images and filter.
+        self.reviewBox.clear_output()
+        
         #build the list of Micrograph images for selected job
         self.ctfReviewList = self.contrastTransfer.buildStarFileData(self.workFlow.projectDirectory.value, self.workFlow.gctfFolderName, self.jobSelection.value + '/')
+        self.resetFilter('')
         #update total of filtered micrographs
         self.totalFilteredMicrographs.value = len(self.ctfReviewList)
-        self.filteredCtfReviewList = self.ctfReviewList
 
     # buildInputWidgets() - write all the workflow fields to the screen.
     #
@@ -534,6 +568,7 @@ class ctfReview:
         #linking button on_click to function
         self.startButton.on_click(self.startReview)
         self.reviewButton.on_click(self.reviewCtfs)
+        self.resetFilterButton.on_click(self.resetFilter)
         self.applyFilterButton.on_click(self.applyFilter)
         self.saveButton.on_click(self.saveSelected)
 
@@ -548,4 +583,4 @@ class ctfReview:
         if  self.showDebug:
             return VBox([self.debug, self.debugText, HBox([self.startButton, self.errorText]), self.jobsBox, self.reviewBox])
         else:
-            return VBox([HBox([self.startButton, self.errorText]), self.jobsBox, self.reviewBox])
+            return VBox([self.debug, HBox([self.startButton, self.errorText]), self.jobsBox, self.reviewBox])
