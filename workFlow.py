@@ -86,8 +86,7 @@ class workFlow:
             disabled=False,
             style=styleBasic)    
 
-    graphBox = widgets.Output(
-        layout={'border': '2px solid black'})
+    graphBox = widgets.VBox([])
     
     ## AutoRun fields - thread control
     ## Start
@@ -175,35 +174,35 @@ class workFlow:
             filehandle.close()
 
             #extract each jobs list from allJobs.    
-            self.motionCorrection.jobsList.options = list(allJobs[0])
-            self.gctf.jobsList.options = list(allJobs[1])
-            self.gautomatch.jobsList.options = list(allJobs[2])
+            self.motionCorrection.jobMaint.jobsList.options = list(allJobs[0])
+            self.gctf.jobMaint.jobsList.options = list(allJobs[1])
+            self.gautomatch.jobMaint.jobsList.options = list(allJobs[2])
 
             ##updating the JobNo as the notebook may have been restarted. ##
             #obtain the latest jobNumber
             lenMotionCorrJobs = len(allJobs[0])
             maxMotionCorrJobNo = allJobs[0][lenMotionCorrJobs -1]['jobNumber']
             #left strip the jobNumber by removing the jobPrefix, convert to int, add 1, assign to jobCounter.
-            self.motionCorrection.jobCounter = int(maxMotionCorrJobNo.lstrip(self.motionCorrection.jobPrefix)) + 1
+            self.motionCorrection.jobMaint.jobCounter = int(maxMotionCorrJobNo.lstrip(self.motionCorrection.jobPrefix)) + 1
 
             #obtain the latest jobNumber
             lenGctfJobs = len(allJobs[1])
             maxGctfJobNo = allJobs[1][lenGctfJobs -1]['jobNumber']
             #left strip the jobNumber by removing the jobPrefix, convert to int, add 1, assign to jobCounter.
-            self.gctf.jobCounter = int(maxGctfJobNo.lstrip(self.gctf.jobPrefix)) + 1
+            self.gctf.jobMaint.jobCounter = int(maxGctfJobNo.lstrip(self.gctf.jobPrefix)) + 1
 
             #obtain the latest jobNumber
             lenGautomatchJobs = len(allJobs[2])
             maxGautomatchJobNo = allJobs[2][lenGautomatchJobs -1]['jobNumber']
             #left strip the jobNumber by removing the jobPrefix, convert to int, add 1, assign to jobCounter.
-            self.gautomatch.jobCounter = int(maxGautomatchJobNo.lstrip(self.gautomatch.jobPrefix)) + 1
+            self.gautomatch.jobMaint.jobCounter = int(maxGautomatchJobNo.lstrip(self.gautomatch.jobPrefix)) + 1
         
     #Save all jobs to file
     @debug.capture(clear_output=True)
     def saveJobs(self, target):
-        mcListedJobs = list(self.motionCorrection.jobsList.options)
-        gctfListedJobs = list(self.gctf.jobsList.options)
-        gautoListedJobs = list(self.gautomatch.jobsList.options)
+        mcListedJobs = list(self.motionCorrection.jobMaint.jobsList.options)
+        gctfListedJobs = list(self.gctf.jobMaint.jobsList.options)
+        gautoListedJobs = list(self.gautomatch.jobMaint.jobsList.options)
 
         #add the three lists to a new list
         allJobs = []
@@ -233,22 +232,24 @@ class workFlow:
         self.motionCorrection.outMrc.disabled = False
         self.motionCorrection.outMrc.value = ''
         self.motionCorrection.runButton.disabled=False
-        self.motionCorrection.runAllButton.disabled=False
+        self.motionCorrection.jobMaint.runAllButton.disabled=False
         #CTF defaults
         self.gctf.inMrc.disabled = False
         self.gctf.inMrc.value = ''
         self.gctf.outMrc.disabled = False
         self.gctf.outMrc.value = ''        
         self.gctf.runButton.disabled=False
-        self.gctf.runAllButton.disabled=False
+        self.gctf.jobMaint.runAllButton.disabled=False
         #Auto Piicking defaults
         self.gautomatch.inMrc.disabled = False
         self.gautomatch.inMrc.value = ''
         self.gautomatch.outMrc.disabled = False
         self.gautomatch.outMrc.value = ''        
         self.gautomatch.runButton.disabled=False
-        self.gautomatch.runAllButton.disabled=False
-
+        self.gautomatch.jobMaint.runAllButton.disabled=False
+        
+        self.displayGraphs.disabled = True
+        self.enableAutoRun.disabled = True
         
     # workflowProcess() - manage fields for workflow processing
     #
@@ -262,7 +263,7 @@ class workFlow:
             self.errorText.value = "Motion Correction frame dose must be > 0"
             self.errorText.layout= self.errorLayout
         self.motionCorrection.runButton.disabled=True
-        self.motionCorrection.runAllButton.disabled=True
+        self.motionCorrection.jobMaint.runAllButton.disabled=True
         #CTF defaults
         self.gctf.inMrc.disabled = True
         self.gctf.inMrc.value = '*.mrc'
@@ -272,7 +273,7 @@ class workFlow:
             self.errorText.value = "Contract Transfer Processing: Continue Processing must be 'Yes'"
             self.errorText.layout = self.errorLayout
         self.gctf.runButton.disabled=True
-        self.gctf.runAllButton.disabled=True
+        self.gctf.jobMaint.runAllButton.disabled=True
         #Gautomatch defaults
         self.gautomatch.inMrc.disabled = True
         self.gautomatch.inMrc.value = '*.mrc'
@@ -282,7 +283,10 @@ class workFlow:
             self.errorText.value = "Auto Match: Autopick unfinished mrcs must be 'Yes'"
             self.errorText.layout = self.errorLayout
         self.gautomatch.runButton.disabled=True
-        self.gautomatch.runAllButton.disabled=True
+        self.gautomatch.jobMaint.runAllButton.disabled=True
+        
+        self.displayGraphs.disabled = False
+        self.enableAutoRun.disabled = False       
 
     # runWorkflowJobs() - Execute MotionCorr, Gctf and Gautomatch as a workflow.
     #
@@ -310,9 +314,9 @@ class workFlow:
             if  dirExists == True:
 
                 #reset runProgress
-                self.motionCorrection.runProgress.value = 0
-                self.gctf.runProgress.value = 0
-                self.gautomatch.runProgress.value = 0
+                self.motionCorrection.jobMaint.runProgress.value = 0
+                self.gctf.jobMaint.runProgress.value = 0
+                self.gautomatch.jobMaint.runProgress.value = 0
                 
                 self.runProgress.max = 4
                 self.runProgress.value = 1
@@ -329,8 +333,7 @@ class workFlow:
                 #gautomatch uses motionCorr output for processing
                 self.gautomatch.runAllWorkflowJobs(self.projectDirectory.value, self.motionCorrFolderName)
                 self.runProgress.value = 4    
-                
-                self.graphBox.clear_output()
+
                 if  self.displayGraphs.value == 'Enable':
                     self.buildGraphs()
         else:
@@ -341,30 +344,41 @@ class workFlow:
     #
     @debug.capture(clear_output=True)
     def buildGraphs(self):
+        
+        self.graphBox.children = []                
+
         ctfStarFilePath = glob.glob(self.projectDirectory.value + self.gctfFolderName + '*/micrographs_ctf.star')
         
         if  len(ctfStarFilePath) > 0:
+
             rowItemMax = 2
+            fig = None
+            axes = None
             maxRows = math.ceil(len(ctfStarFilePath) / rowItemMax)
 
             plt.close('all')
+            #interactive off
+            plt.ioff()
+            #clear figure
+            plt.clf()
             fig, axes = plt.subplots(nrows=maxRows, ncols=rowItemMax)
 
+            ax = axes.flatten()
+            
             for i in range(len(ctfStarFilePath)):
                 split = ctfStarFilePath[i].rsplit('/', 2)
                 #create a numpy array from .star file using col 12 MaxCtfResolution
                 ctfData = np.loadtxt(ctfStarFilePath[i], skiprows=17, usecols=12)
 
-                axes[i].set_title("Job: " + split[1])
-                axes[i].set_ylabel('Probablity')
-                axes[i].set_xlabel("Max CTF resolution (A)")
-                axes[i].hist(ctfData, bins=50, density=True, histtype='bar',  facecolor='xkcd:nasty green', alpha=0.75)
+                ax[i].set_title("Job: " + split[1])
+                ax[i].set_ylabel('Probablity')
+                ax[i].set_xlabel("Max CTF resolution (A)")
+                ax[i].hist(ctfData, bins=50, density=True, histtype='bar',  facecolor='xkcd:nasty green', alpha=0.75)
 
             fig.tight_layout(pad=1, w_pad=1, h_pad=1)
 
-            with self.graphBox:
-                plt.show()
-            
+            self.graphBox.children = [fig.canvas]
+                
     ## AutoRun thread functions
     ##
     # buttonStartAutoRun() - start/restart auto run processing
@@ -398,17 +412,21 @@ class workFlow:
             threadEvent.wait(self.runDelay.value * 60)
     #End
             
-    # on_click() - handle actions for the Mode button, enable/disable AutoRun  
+    # on_clickMode() - handle actions for the Mode button
     #
     @debug.capture(clear_output=True)
-    def on_click(self, change):
-        if  self.mode.value == 'Single Process':
+    def on_clickMode(self, change):
+        if  self.mode.value == 'Single':
             #protect and fill fields as needed.
             self.singleProcess()
             
         if  self.mode.value == 'Workflow':
             self.workflowProcess()
-            
+
+    # on_clickAutoRun() - handle actions for enable/disable AutoRun
+    #
+    @debug.capture(clear_output=True)
+    def on_clickAutoRun(self, change):
         if  self.enableAutoRun.value == 'Enable':
             self.startAutoRun.disabled = False
             self.stopAutoRun.disabled  = False
@@ -421,12 +439,12 @@ class workFlow:
             #Disabling, so stop autoRun if running.
             self.buttonStopAutoRun('')            
 
-    # on_click() - handle click actions for the displayGraphs radio button
+    # on_clickGraph() - handle actions for the displayGraphs radio button
+    #
     @debug.capture(clear_output=True)
-    def on_click(self, change):
+    def on_clickGraph(self, change):
         if  self.displayGraphs.value == 'Disable':
-            self.graphBox.clear_output()
-    
+            self.graphBox.children = []
     
     # buildInputWidgets() - write all the workflow fields to the screen.
     #
@@ -439,18 +457,17 @@ class workFlow:
         self.startAutoRun.on_click(self.buttonStartAutoRun)
         self.stopAutoRun.on_click(self.buttonStopAutoRun)
         
-        self.displayGraphs.observe(self.on_click, 'value')
-
         jobButtons = HBox([self.loadButton, self.saveButton, self.errorText])
         runBox     = HBox([self.runAllButton, self.runProgress])
         autoRunBox = HBox([self.enableAutoRun, self.startAutoRun, self.runDelay, self.stopAutoRun])
         
-        self.mode.observe(self.on_click, 'value')    
-        self.enableAutoRun.observe(self.on_click, 'value')
+        self.mode.observe(self.on_clickMode, 'value')    
+        self.enableAutoRun.observe(self.on_clickAutoRun, 'value')
+        self.displayGraphs.observe(self.on_clickGraph, 'value')
         #Disable AutoRun fields at startup
-        self.on_click('Disable')
+        self.on_clickAutoRun('Disable')
         
         if  self.showDebug:
             return VBox([self.debug, self.debugText, self.mode, self.projectDirectory, jobButtons, runBox, autoRunBox, self.displayGraphs, self.graphBox])
         else:
-            return VBox([self.mode, self.projectDirectory, jobButtons, runBox, autoRunBox, self.displayGraphs, self.graphBox])
+            return VBox([self.debug, self.mode, self.projectDirectory, jobButtons, runBox, autoRunBox, self.displayGraphs, self.graphBox])

@@ -1,6 +1,7 @@
 import os
 import glob
 import ipywidgets as widgets
+import jobMaintenance as jm
 from ipywidgets import HBox, VBox, Box, Label, Layout
 
 #Motion Correction input fields and functions to execute jobs
@@ -287,63 +288,6 @@ class motionCorrection:
         tooltip='Run program',
         icon='check')
 
-    #
-    ## Job Maintenance fields
-    #  --start--
-    existingJobs = []
-    jobCounter = 1
-    
-    #screen fields
-    jobsList = widgets.SelectMultiple(
-        description='Jobs: ',
-        options=header,
-        disabled=False,
-        style={'description_width': 'initial'},
-        rows=10,
-        layout=Layout(width='90%'))
-
-    addButton = widgets.Button(
-        description='Add',
-        disabled=False,
-        button_style='',
-        tooltip='Add job')
-
-    deleteButton = widgets.Button(
-        description='Delete',
-        disabled=False,
-        button_style='',
-        tooltip='Delete job(s)')
-
-    selectButton = widgets.Button(
-        description='Select', 
-        disabled=False, 
-        button_style='', 
-        tooltip='Select job for editing.')
-
-    updateButton = widgets.Button(
-        description='Update',
-        disabled=False,
-        button_style='',
-        tooltip='Update job.')
-
-    runAllButton = widgets.Button(
-        description='Run all',
-        disabled=False,
-        button_style='',
-        tooltip='Run all jobs')
-
-    runProgress = widgets.IntProgress(
-        value=0, 
-        min=0, 
-        max=10, 
-        step=1, 
-        description='Progress:', 
-        bar_style='', 
-        orientation='horizontal')
-    #  --end--
-    ## Job Maintenance fields
-    #      
-
     errorText = widgets.Textarea(
         description='',
         description_tooltip='Error messages',
@@ -374,28 +318,29 @@ class motionCorrection:
     def __init__(self, callProgramFunc, showDebug):
         self.callProgram = callProgramFunc
         self.showDebug = showDebug
+        self.jobMaint  = jm.jobMaintenance(self.header, self.jobNumber, self.buildJob, self.buildNewJobs,  self.buildArgumentsList, self.updateScreenFields, callProgramFunc, self.program)
     
     # runSingleJob() - execute a single job
     #
     @debug.capture(clear_output=True)
     def runSingleJob(self, target):
-        self.runProgress.max = 2
-        self.runProgress.value = 1
-        self.callProgram(self.program, self.buildArgumentsList(self.buildJob('', '', self.jobNumber), '', ''), self.outMrc.value) 
-        self.runProgress.value = self.runProgress.max
+        self.jobMaint.runProgress.max = 2
+        self.jobMaint.runProgress.value = 1
+        self.callProgram(self.program, self.buildArgumentsList(self.buildJob(self.jobNumber, '', ''), '', ''), self.outMrc.value) 
+        self.jobMaint.runProgress.value = self.jobMaint.runProgress.max
     
     #Multi value field processing support
     # addPatchJobs() - add new jobs for all 'Patch' values entered
     #
     @debug.capture(clear_output=True)
     def addPatchJobs(self, target):
-        self.addJobs("patch", self.patchMulti.value)
+        self.jobMaint.addJobs("patch", self.patchMulti.value)
 
     # addBFactorJobs() - add new jobs for all 'BFactor' values entered.
     #
     @debug.capture(clear_output=True)
     def addBFactorJobs(self, target):
-        self.addJobs("bFactor", self.bFactorMulti.value)
+        self.jobMaint.addJobs("bFactor", self.bFactorMulti.value)
 
     # buildInputWidgets() - write all the Motion Correction input fields to the screen.
     #
@@ -426,7 +371,7 @@ class motionCorrection:
         if  self.showDebug:
             return VBox([self.debug, self.debugText, tab, self.runButton])
         else:
-            return VBox([tab, self.runButton])
+            return VBox([self.debug, tab, self.runButton])
 
     # buildNewJobs() - construct a job containing all arguments.
     #    Arguments:
@@ -445,8 +390,8 @@ class motionCorrection:
 
         #Building a single job
         if  not fieldName and not values:
-            newJob = self.buildJob('', '', self.jobCounter)
-            self.jobCounter = self.jobCounter + 1
+            newJob = self.buildJob(self.jobMaint.jobCounter, '', '')
+            self.jobMaint.jobCounter += 1
             return newJob
         
         #Building multiple jobs
@@ -460,12 +405,12 @@ class motionCorrection:
             
             if  fieldCleaned:
                 if  fieldName == 'patch':
-                    newJob = self.buildJob(fieldCleaned, '', self.jobCounter)
+                    newJob = self.buildJob(self.jobMaint.jobCounter, fieldCleaned, '')
 
                 if  fieldName == 'bFactor':
-                    newJob = self.buildJob('', fieldCleaned, self.jobCounter)
+                    newJob = self.buildJob(self.jobMaint.jobCounter, '', fieldCleaned)
 
-                self.jobCounter = self.jobCounter + 1
+                self.jobMaint.jobCounter += 1
                 jobList.append(newJob)                    
 
         return jobList
@@ -479,7 +424,7 @@ class motionCorrection:
     #        dict containing all arguments.
     #
     @debug.capture(clear_output=True)
-    def buildJob(self, patchValue, bFactorValue, jobNo):
+    def buildJob(self, jobNo='', patchValue='', bFactorValue=''):
         
         jobNoWithPrefix = self.jobPrefix + str(jobNo)
         if  jobNo:
@@ -564,7 +509,7 @@ class motionCorrection:
     #        prefixName - prefix used to create the output file. Required for 'Workflow'
     #                     mode.
     @debug.capture(clear_output=True)
-    def buildArgumentsList(self, jobToProcess, inputFile, prefixName):
+    def buildArgumentsList(self, jobToProcess, inputFile='', prefixName=''):
         args = ''
 
         if  inputFile:
@@ -628,42 +573,6 @@ class motionCorrection:
 
         return args
     
-    #
-    ## Job Maintenance functions
-    #  --start--    
-    
-    # addJob() - builds the new job from the input variables and updates the job list.
-    #
-    @debug.capture(clear_output=True)
-    def addJob(self, target):
-        listedJobs = self.jobsList.options
-        listedJobsList = list(listedJobs)
-        newJob = self.buildJob("", "", self.jobCounter)
-        #converting to tuple, update jobsList, jobNumber
-        newJobTuple = (newJob,)
-        listedJobsList.extend(newJobTuple)
-        self.jobsList.options = listedJobsList
-        self.jobCounter = self.jobCounter + 1
-        self.jobNumber.value = ''
-
-    # deleteJob() - delete selected jobs from the job list.
-    #
-    @debug.capture(clear_output=True)
-    def deleteJob(self, target):
-        #obtain the listedJobs
-        listedJobs = self.jobsList.options
-        listedJobsList = list(listedJobs)
-        #obtain the selectedJobs
-        selectedJobs = self.jobsList.value
-        selectedJobsList = list(selectedJobs)
-        #remove selected jobs
-        for i in range(len(selectedJobsList)):
-            if  (str(selectedJobsList[i]).startswith('Job#') == False):
-                listedJobsList.remove(selectedJobsList[i])
-        #update
-        self.jobsList.options = listedJobsList
-        self.jobNumber.value = ''
-
     # loadMicrographs() - read the star file to obtain a list of micrographs
     #                      processing
     #    Arguments:
@@ -711,10 +620,10 @@ class motionCorrection:
     @debug.capture(clear_output=True)
     def runAllWorkflowJobs(self, projectDirectory):
         #obtain the listedJobs
-        listedJobs = self.jobsList.options
+        listedJobs = self.jobMaint.jobsList.options
         listedJobsList = list(listedJobs)
 
-        self.runProgress.max = len(listedJobsList)
+        self.jobMaint.runProgress.max = len(listedJobsList)
 
         if  projectDirectory.endswith('/') == False:
             projectDirectory += '/'
@@ -725,7 +634,7 @@ class motionCorrection:
         for i in range(len(listedJobsList)):
             #setting progress bar to show job has started running.
             if  (str(listedJobsList[i]).startswith('Job#') == True):
-                self.runProgress.value = i+1    
+                self.jobMaint.runProgress.value = i+1    
 
             if  (str(listedJobsList[i]).startswith('Job#') == False):
                 #'Workflow' mode
@@ -756,104 +665,14 @@ class motionCorrection:
                             self.callProgram(self.program, self.buildArgumentsList(listedJobsList[i], micrographs[j], prefix), 
                                              outputFolder)
 
-                    self.runProgress.value = i+1    
-
-    # runAllJobs() - execute all jobs in the list.
-    #    target - not used, exists to make to make the button call work.
-    #
-    @debug.capture(clear_output=True)
-    def runAllJobs(self, target):
-        #obtain the listedJobs
-        listedJobs = self.jobsList.options
-        listedJobsList = list(listedJobs)
-
-        self.runProgress.max = len(listedJobsList)
-
-        #Run each job, but not the Header row.
-        for i in range(len(listedJobsList)):
-            #setting progress bar to show job has started running.
-            if  (str(listedJobsList[i]).startswith('Job#') == True):
-                self.runProgress.value = i+1    
-
-            if  (str(listedJobsList[i]).startswith('Job#') == False):
-                self.callProgram(self.program, self.buildArgumentsList(listedJobsList[i], '', ''), listedJobsList[i]['outMrc'])
-                self.runProgress.value = i+1    
-
-    # selectJob() - update field values using the selected job in the job list
-    #
-    @debug.capture(clear_output=True)
-    def selectJob(self, target):
-        #obtain the selectedJobs
-        selectedJobs = self.jobsList.value
-        selectedJobsList = list(selectedJobs)
-
-        #can only select a single job for updating.
-        if  len(selectedJobsList) == 1:
-            self.updateScreenFields(selectedJobsList[0])
-    
-    # updateJob() - update the job for the displayed job number
-    #
-    @debug.capture(clear_output=True)
-    def updateJob(self, target):
-        #obtain the listedJobs
-        listedJobs = self.jobsList.options
-        listedJobsList = list(listedJobs)
-        #build updated job
-        updatedJob = self.buildJob('', '', '')
-        updateJobNo = updatedJob['jobNumber']
-
-        for i in range(len(listedJobsList)):
-            #skip checking the header
-            if  (str(listedJobsList[i]).startswith('Job#') == False):
-                listedJobNo = listedJobsList[i]["jobNumber"]
-                if  listedJobNo == updateJobNo:
-                    listedJobsList[i] = updatedJob
-
-        #update screen field
-        self.jobsList.options = listedJobsList
-        self.jobNumber.value = ''
-            
-    # addJobs() - Adds multiple jobs, when the user has specified a range of values.
-    #    Arguments:
-    #        fieldName - name of the field that value range has been specified 
-    #        values    - specified values, ';' separated.
-    #
-    @debug.capture(clear_output=True)
-    def addJobs(self, fieldName, values):
-        #obtaining currently listed jobs
-        listedJobs = self.jobsList.options
-        listedJobsList = list(listedJobs)
-
-        newJobs = self.buildNewJobs(fieldName, values)
-
-        for i in range(len(newJobs)):
-            #converting to tuple
-            newJobTuple = (newJobs[i],)
-            listedJobsList.extend(newJobTuple)
-
-        #Update jobsList and jobNumber
-        self.jobsList.options = listedJobsList
-        self.jobNumber.value = ''
-
+                    self.jobMaint.runProgress.value = i+1    
+        
     # buildAllWidgets() - display the jobs list and associated buttons.
     #
     @debug.capture(clear_output=True)
     def buildAllWidgets(self):
-        #Add fuctions to buttons.
-        self.addButton.on_click(self.addJob)
-        self.deleteButton.on_click(self.deleteJob)
-        self.selectButton.on_click(self.selectJob)
-        self.updateButton.on_click(self.updateJob)
-        self.runAllButton.on_click(self.runAllJobs)
-
-        buttons = HBox([self.addButton, self.deleteButton, self.selectButton, self.updateButton, self.runAllButton, self.runProgress])
-        selectableTable = VBox([self.jobsList, buttons, self.errorText])
-
+        selectableTable = VBox([self.jobMaint.buildJobWidgets(), self.errorText])
         inputWidgets = self.buildInputWidgets()
 
         return VBox([inputWidgets, selectableTable])
-
-    #  --end--
-    ## Job Maintenance functions
-    #      
-        
+    

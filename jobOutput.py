@@ -143,4 +143,4 @@ class jobOutput:
         if  self.showDebug:
             return VBox([self.debug, self.debugText, self.stdout, self.stderr, self.argsOutput])
         else:
-            return VBox([self.stdout, self.stderr, self.argsOutput])
+            return VBox([self.debug, self.stdout, self.stderr, self.argsOutput])
