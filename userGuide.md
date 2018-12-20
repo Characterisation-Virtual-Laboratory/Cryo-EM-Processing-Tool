@@ -13,7 +13,7 @@ Installing the Cryo-EM Processing Tool involves a few easy steps: setting up a P
 
 ## Running the tool
 
-The following instructions for running the tool assume you have installed it (see section above for instructions) and that your MASSIVE Desktop is running.
+The following instructions assume you have installed it (see section above for instructions) and that your MASSIVE Desktop is running.
 
 1. Activate the virtual environment
 
@@ -43,7 +43,7 @@ The following instructions for running the tool assume you have installed it (se
 
     ![Image of open Cryo-EM.ipynb](./images/openCryo-EM.png)
 
-6. Press Shift+Enter 5 times to execute the notebook. Alternatively, on the Notebook menu, click the Run button 5 times.
+6. Press Shift+Enter 6 times to execute the notebook. Alternatively, on the Notebook menu, click the Run button 6 times.
 
     ![Image of Notebook](./images/executeNotebook.png)
 
@@ -52,20 +52,6 @@ The following instructions for running the tool assume you have installed it (se
     ![Image of Cryo-EM processing tool](./images/readyForProcessing.png)
 
 ## Using the tool
-
-### Processing modes
-
-The tool has been constructed to run MotionCor2, Gctf and Gautomatch as 'single' independent programs or in a 'workflow' mode to match the [Relion](https://www2.mrc-lmb.cam.ac.uk/relion/index.php?title=Main_Page) directory structure.
-
-Read 'Single process mode' below as this explains how to create, save and run jobs. This tool has been defaulted to 'Workflow' mode.
-
-#### Single process mode
-
-To enable, click on the 'Single' button on the Workflow tab.
-
-![Image of Motion Correction  tab](./images/workflowSingle.png)
-
-Single process mode enables user input for the input/output fields to the three programs.
 
 There are three main tabs, representing each program:
 
@@ -89,6 +75,37 @@ There are three main tabs, representing each program:
 
 Each tab, works independently of the others. Jobs are created on each tab, only for that program.
 
+__Creating jobs__
+1. Add jobs:
+    * Complete all fields as required. Ensure you complete the fields on all tabs. e.g. 'Basic' and 'Advanced' for Motion correction.
+    * Click on 'Add' to create the job. A new row will appear in the 'Jobs' field.
+    * Alter values as required and click 'Add' to create more jobs.
+2. Delete jobs:
+    * Using your mouse, select a job row. Multiple jobs can be selected by pressing 'Windows/Unix': Cntrl + left mouse click or 'Mac': Command + left mouse click
+    * Click Delete.
+4. Update job:
+    * Select the job and click 'Select'.
+    * Alter values as required.
+    * Click 'Update'.
+
+### Processing modes
+
+The tool has been constructed to run MotionCor2, Gctf and Gautomatch as 'single' independent programs or in a 'workflow' mode to match the [Relion](https://www2.mrc-lmb.cam.ac.uk/relion/index.php?title=Main_Page) directory structure.
+
+This tool has been defaulted to 'Workflow' mode.
+
+
+#### Single process mode
+
+To enable, click on the 'Single' button on the Workflow tab.
+
+![Image of Motion Correction tab](./images/workflowSingle.png)
+
+Single process mode enables user input for the input/output fields and the 'Run' and 'Run All' buttons for all three programs.
+
+![Image of Motion Correction Single mode](./images/mcSingle.png)
+
+
 __Running a single job__
   - clicking the 'Run' button will execute the program based on the input fields.
 
@@ -97,24 +114,16 @@ __Running multiple jobs__
   This process allow you to run the program against the same or different input files by altering parameters to obtain the best results for your data.
 
   1. Add jobs:
-      * Complete all fields as required. Ensure you complete the fields on all tabs. e.g. 'Basic' and 'Advanced' for Motion correction.
-      * Click on 'Add' to create the job. A new row will appear in the 'Jobs' field.
-      * Alter values as required and click 'Add' to create more jobs.
+      * Jobs can be added, deleted and updated as described above.
   2. Run jobs:
       * Clicking on 'Run All' will execute all jobs sequentially.
-  3. Delete jobs:
-      * Using your mouse, select a job row.
-      * Click Delete.
-  4. Update job:
-      * Select the job and click 'Select'.
-      * Alter values as required.
-      * Click 'Update'.
 
-**Note**: When running MotionCor2, Gctf or Gautomatch from any of these tabs, the programs behave as if they had been executed on the command line.
+**Note**: When running MotionCor2, Gctf or Gautomatch from any of these tabs in 'Single' mode, the programs behave as if they had been executed on the command line.
 
 For a single program execution or job, all output, errors and Arguments are written to the fields, 'Standard output', 'Standard Error' and 'Arguments' displayed on the 'Job Output' tab.
 
-The values from these fields are also written to files in the destination folder for your reference.  These files are appended for each program run.
+The values from these fields are also written to files in the destination folder for your reference.  
+These files are appended for each program run.
 
 _programName_-arguments.txt  
 _programName_-error.txt  
@@ -122,16 +131,19 @@ _programName_-output.txt
 
   ![Image of Stdout, Stderr and Argument fields](./images/outputs.png)
 
-
 #### Workflow mode
 
 Workflow mode has been built to allow processing using all the options for MotionCor2, Gctf and Gautomatch while maintaining compatibility with the Relion 2 directory structure.
 
   ![Image of Workflow mode](./images/workflowWorkflow.png)
 
+For all programs in 'workflow' mode, the 'Input' and 'Output' fields plus the 'Run' and 'Run all' buttons are disabled. The 'Input' field for Motion Correction remains enabled.
+
+  ![Image of Motion Correction Workflow mode](./images/mcWorkflow.png)
+
 Ensure you have no 'Jobs' created in 'Single' mode as they will cause the 'Workflow' process to behave unexpectedly. e.g. file paths may be incorrect to maintain compatibility with the Relion workflow.
 
-1. Click on the 'Workflow' button. This will protect and default values into certain fields for each of the three programs. e.g. all Output fields are pre populated and protected.
+1. Click on the 'Workflow' button.
 
 2. Add the full path of your Relion project to 'Project Directory'
 
@@ -145,9 +157,9 @@ Ensure you have no 'Jobs' created in 'Single' mode as they will cause the 'Workf
 
 4. Create jobs for Motion Correction, Contrast Transfer Function and Auto Particle Picking.
 
-5. Click on 'Run all jobs'. This will execute all Motion Correction jobs. It will then run all Contrast Transfer Function jobs using the output from the Motion Correction jobs as input and lastly, Auto Particle picking will run all jobs using the output from the Motion Correction jobs as input.
+5. On the 'Workflow' tab, click on 'Run all jobs'. This will execute all Motion Correction jobs. It will then run all Contrast Transfer Function jobs using the output from the Motion Correction jobs as input and lastly, Auto Particle picking will run all jobs using the output from the Motion Correction jobs as input.
 
-6. All workflow jobs can be loaded and saved to disk by clicking on the 'Load jobs' and 'Save jobs' buttons. The file 'workflowJobs.data' will be created in the Project Directory. This feature allows you to develop a set of jobs, known to produce quality output to reuse on future datasets.
+6. All workflow jobs can be loaded and saved to disk by clicking on the 'Load jobs' and 'Save jobs' buttons. The file 'workflowJobs.data' will be created in the Project Directory. This feature allows you to develop a set of jobs, known to produce quality output for reuse on future datasets.
 
   ![Image of Input load and save](./images/loadSaveJobs.png)
 
@@ -241,6 +253,34 @@ class motionCorrection:
     program = 'motioncor2'
     jobPrefix = 'mc'
 ```
+
+##### Workflow Auto run
+
+![Image of jobs](./images/workflowAutorun.png)
+
+
+The auto run functionality has been added to continually process new micrographs as they are produced by the Cryo EM.
+
+ 1. Click on the Enable radio button.
+
+ 2. Specify the pause between runs in minutes.
+
+ 3. Click on 'Start auto run'.
+
+ 4. Click on 'Stop auto run' when required.
+
+ Autorun is equivalent to clicking on 'Run all jobs' every X minutes. The three programs MotionCor2, gctf and gautomath have been configured to only process new micrographs. Previously processed micrographs are ignored.
+
+
+ ##### Workflow Display Graphs
+
+ To assist in monitoring data quality, ensure 'Display graphs' is enabled.
+
+ ![Image of workflow graph controls](./images/workflowGraphs.png)
+
+ For each job run, the graphs will be constructed. The graphs are built using output created by Gctf. The purpose of the graphs is to provide a visual cue for monitoring data quality.  
+
+ ![Image of workflow graphs](./images/workflowGraphsBuilt.png)
 
 ### CTF Review
 
