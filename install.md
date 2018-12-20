@@ -47,4 +47,4 @@ For further information on accessing and using a CVL Desktop go to the CVL websi
   jupyter lab
   ```
 
-Once you have installed JupyterLab go to the [User guide for the Cryo-EM Processing Tool]() page for information on using the Cryo-EM Processing Tool.
+Once you have installed JupyterLab go to the [User guide for the Cryo-EM Processing Tool](./userGuide.md) page for information on using the Cryo-EM Processing Tool.
