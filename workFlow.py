@@ -348,6 +348,8 @@ class workFlow:
         self.graphBox.children = []                
 
         ctfStarFilePath = glob.glob(self.projectDirectory.value + self.gctfFolderName + '*/micrographs_ctf.star')
+        ctfStarFilePath.sort()
+        
         
         if  len(ctfStarFilePath) > 0:
 

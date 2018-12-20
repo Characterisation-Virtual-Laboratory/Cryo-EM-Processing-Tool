@@ -390,7 +390,8 @@ class ctfReview:
     @debug.capture(clear_output=True)
     def buildReviewJobs(self):
         folders = glob.glob(self.projectDirectory.value + self.gctfFolderName.value + '*')
-
+        folders.sort()
+        
         jobs = []
         for i in range(len(folders)):
             split = folders[i].rsplit('/', 1)

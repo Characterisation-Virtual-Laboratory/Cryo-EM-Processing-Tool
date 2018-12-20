@@ -807,7 +807,8 @@ class autoPicking:
     def buildSymlinks(self, projectDirectory, motionCorrFolder):
         #obtain a list of micrographs produced by motionCorr
         micrographs = glob.glob(projectDirectory + motionCorrFolder + '/*/Micrographs/*.mrc')
-
+        micrographs.sort()
+        
         for i in range(len(micrographs)):
 
             #The new name combines the motionCorr jobNo with the micrograph name.

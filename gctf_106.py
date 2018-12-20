@@ -1084,7 +1084,8 @@ class contrastTransFunc:
     def buildSymlinks(self, projectDirectory, motionCorrFolder):
         #obtain a list of micrographs produced by motionCorr
         micrographs = glob.glob(projectDirectory + motionCorrFolder + '/*/Micrographs/*.mrc')
-
+        micrographs.sort()
+        
         for i in range(len(micrographs)):
             #The new name combines the motionCorr jobNo with the micrograph name.
             split = micrographs[i].rsplit('/', 3)
@@ -1110,7 +1111,9 @@ class contrastTransFunc:
         micrographs = []
 
         #obtaining values from _gctf.log files
-        for infile in glob.glob(projectDirectory + gctfFolderName + jobFolder + 'Micrographs/*_gctf.log'):
+        gctfLogs = glob.glob(projectDirectory + gctfFolderName + jobFolder + 'Micrographs/*_gctf.log')
+        gctfLogs.sort()
+        for infile in gctfLogs:
             try: 
                 path, fileName = os.path.split(infile)
                 fileHandle = open(infile)
