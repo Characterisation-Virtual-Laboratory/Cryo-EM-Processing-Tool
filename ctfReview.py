@@ -48,13 +48,6 @@ class ctfReview:
         tooltip='Apply',
         icon='')
 
-    reviewButton = widgets.Button(
-        description='Review',
-        disabled=False,
-        button_style='',
-        tooltip='Display filtered CTF mrcs',
-        icon='')
-
     saveButton = widgets.Button(
         description='Save',
         disabled=False,
@@ -457,7 +450,9 @@ class ctfReview:
             self.jobsBox.clear_output()
             with self.jobsBox:
                 display(HBox([self.projectDirectory, self.gctfFolderName]),
-                        self.buildReviewJobs(), self.buildFilters(), HBox([self.reviewButton, self.saveButton]))
+                        self.buildReviewJobs(), self.buildFilters(), HBox([self.saveButton]))
+                
+            self.reviewCtfs('')
 
     # applyFilter() - apply filters to knockout micrographs for review
     #     Returns a list of filtered micrographs
@@ -487,6 +482,7 @@ class ctfReview:
 
         self.filteredCtfReviewList = filtered
         self.totalFilteredMicrographs.value = len(self.filteredCtfReviewList)
+        self.reviewCtfs('')
 
     # reviewCtfs() - when clicked builds a list of jobs for review.
     #    @debug.capture causes any exceptions to be displayed in the debug field
@@ -568,7 +564,6 @@ class ctfReview:
     def buildWidgets(self):
         #linking button on_click to function
         self.startButton.on_click(self.startReview)
-        self.reviewButton.on_click(self.reviewCtfs)
         self.resetFilterButton.on_click(self.resetFilter)
         self.applyFilterButton.on_click(self.applyFilter)
         self.saveButton.on_click(self.saveSelected)
