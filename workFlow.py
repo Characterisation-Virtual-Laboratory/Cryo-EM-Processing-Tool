@@ -104,9 +104,15 @@ class workFlow:
 
     runDelay = widgets.IntText(
         value=5,
-        description='Pause run (mins): ',
+        description='Pause (mins): ',
         description_tooltip='Auto run after a pause in minutes',
         disabled=False,
+        style=styleBasic)
+
+    runCounter = widgets.IntText(
+        value=0,
+        description='Running (secs): ',
+        disabled=True,
         style=styleBasic)
 
     stopAutoRun = widgets.Button(
@@ -117,8 +123,10 @@ class workFlow:
 
     #thread performing autoRun
     threadAutoRun  = None
+    threadRunCounter = None
     #thread event - controls running of the thread e.g. stop/start.
     threadAutoRun_stop = threading.Event()
+    threadRunCounter_stop = threading.Event()
     
     ## End
     
@@ -391,11 +399,14 @@ class workFlow:
         #check for restart, if thread event flag is set, clear it so thread can be restarted
         if  self.threadAutoRun_stop.isSet():
             self.threadAutoRun_stop.clear()
+            self.threadRunCounter_stop.clear()
         #allocate new thread and start it. 
         # When AutoRun is stopped, the thread completes processing and terminates, so a new one is required
         self.threadAutoRun  = threading.Thread(target=self.executeAutoRun, args=(1, self.threadAutoRun_stop)) 
         self.threadAutoRun.start()
-
+        self.threadRunCounter = threading.Thread(target=self.executeCounter, args=(1, self.threadRunCounter_stop)) 
+        self.threadRunCounter.start()
+        
     # buttonStopAutoRun() - stop auto run processing
     #    Argument - change - not used, exists to cater for ipywidget button actions.
     # 
@@ -403,6 +414,7 @@ class workFlow:
     def buttonStopAutoRun(self, change):
         #set Event flag to stop the looping in executeAutoRun()
         self.threadAutoRun_stop.set()
+        self.threadRunCounter_stop.set()
 
     # executeAutoRun() - execute runWorkflowJobs and then pause for runDelay
     #    Argument - change - not used, exists to cater for ipywidget button actions.
@@ -412,8 +424,17 @@ class workFlow:
         while not threadEvent.is_set():
             self.runWorkflowJobs('')
             threadEvent.wait(self.runDelay.value * 60)
-    #End
-            
+    
+    # executeCounter() - updates runCounter after pausing for 1 second.
+    #    Argument - change - not used, exists to cater for ipywidget button actions.
+    # 
+    @debug.capture(clear_output=True)    
+    def executeCounter(self, arg, threadEvent):
+        self.runCounter.value = 0
+        while not threadEvent.is_set():
+            threadEvent.wait(1)
+            self.runCounter.value += 1     
+    
     # on_clickMode() - handle actions for the Mode button
     #
     @debug.capture(clear_output=True)
@@ -461,7 +482,7 @@ class workFlow:
         
         jobButtons = HBox([self.loadButton, self.saveButton, self.errorText])
         runBox     = HBox([self.runAllButton, self.runProgress])
-        autoRunBox = HBox([self.enableAutoRun, self.startAutoRun, self.runDelay, self.stopAutoRun])
+        autoRunBox = HBox([self.enableAutoRun, self.startAutoRun, self.stopAutoRun, self.runDelay, self.runCounter])
         
         self.mode.observe(self.on_clickMode, 'value')    
         self.enableAutoRun.observe(self.on_clickAutoRun, 'value')
