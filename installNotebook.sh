@@ -9,6 +9,7 @@ echo '** Installing Python Libraries **'
 pip3 install mrcfile
 pip3 install Pillow
 pip3 install pandas
+pip3 install ipympl
 
 #Setup Jupyter Lab
 echo '** Installing Jupyter Lab**'
@@ -23,3 +24,6 @@ jupyter nbextension enable --py widgetsnbextension
 
 #Installing Widgets to Jupyter Lab
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
+
+#Install matplotlib to Jupyter Lab
+jupyter labextension install jupyter-matplotlib

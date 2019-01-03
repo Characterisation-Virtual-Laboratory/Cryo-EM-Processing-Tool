@@ -5,49 +5,30 @@
 The processing tool incorporates all the options
 available in [MotionCor2](http://msg.ucsf.edu/em/software/motioncor2.html) (Motion Correction), [Gctf](https://www.mrc-lmb.cam.ac.uk/kzhang/Gctf/) (Contrast Transfer Function) and [Gautomatch](https://www.mrc-lmb.cam.ac.uk/kzhang/Gautomatch/) (Auto Particle Picking) in JupyterLab's user friendly environment.
 
-If you have not installed the tool, refer to [install.md](./install.md)
-
 ## Installing the tool
 
-Installing the Cryo-EM Processing Tool involves a few easy steps: setting up a Python environment, installing JupyterLab and loading some HPC modules. Refer to [Installing the Cryo-EM Processing Tool](./install.md) for instructions.
+If you are running a CVL@M3 Desktop, the tool has already been installed.
+
+Start your CVL@M3 Desktop. An 'Advanced' Desktop is recommended to gain suitable GPU performance.  
+
+For further information on accessing and using a CVL Desktop go to the CVL website's [Getting started on the CVL@M3 Desktop](https://www.cvl.org.au/cvl-desktop/getting-started-with-the-cvl) page.
+
+For other systems, installing the Cryo-EM Processing Tool involves a few easy steps: setting up a Python environment, installing JupyterLab and loading some HPC modules. Refer to [Installing the Cryo-EM Processing Tool](./install.md) for instructions.
 
 ## Running the tool
 
 The following instructions assume you have installed it (see section above for instructions) and that your MASSIVE Desktop is running.
 
-1. Activate the virtual environment
+1. Click on 'Applications', 'Cryo-Electron Microscopy', 'Cryo EM processing tool', 'Cryo EM processing tool 0.1'. This will then start JupyterLab and open the tool.
 
-  ```
-  source Cryo-EM-Processing-Tool/bin/activate
-  ```
+    ![Image of Applications menu](./images/applicationMenu.png)
 
-2. Load required HPC modules:
 
-  ```
-  module load motioncor2/2.1
-  module load gctf/1.06_cuda8
-  module load gautomatch/0.56
-  ```
-
-3. Start JupyterLab. This will cause your web browser to open showing JupyterLab. If you are not familiar with JupyterLab,  refer to the [documentation.](https://jupyterlab.readthedocs.io/en/stable/)
-
-  ```
-  jupyter lab
-  ```
-
-4. Inside JupyterLab, open the file browser if not visible. Click on the 'folder' icon.
-
-    ![Image of JupyterLab File Browser](./images/jupyterFileBrowser.png)
-
-5. Double click on the file 'Cryo-EM.ipynb', you should now see the notebook.
-
-    ![Image of open Cryo-EM.ipynb](./images/openCryo-EM.png)
-
-6. Press Shift+Enter 6 times to execute the notebook. Alternatively, on the Notebook menu, click the Run button 6 times.
+2. Press Shift+Enter 6 times to execute the notebook. Alternatively, on the Notebook menu, click the Run button 6 times.
 
     ![Image of Notebook](./images/executeNotebook.png)
 
-7. The Cryo-EM processing tool is now ready.
+3. The Cryo-EM processing tool is now ready.
 
     ![Image of Cryo-EM processing tool](./images/readyForProcessing.png)
 
@@ -137,7 +118,7 @@ Workflow mode has been built to allow processing using all the options for Motio
 
   ![Image of Workflow mode](./images/workflowWorkflow.png)
 
-For all programs in 'workflow' mode, the 'Input' and 'Output' fields plus the 'Run' and 'Run all' buttons are disabled. The 'Input' field for Motion Correction remains enabled.
+For all programs in 'workflow' mode, the 'Input' and 'Output' fields plus the 'Run' and 'Run all' buttons are disabled. Only the 'Input' field for Motion Correction remains enabled.
 
   ![Image of Motion Correction Workflow mode](./images/mcWorkflow.png)
 
@@ -296,15 +277,13 @@ CTF Review allows the output from Gctf to be displayed, reviewed, filtered and s
 
   3. Alter the filter fields and order as required, click 'Apply'.
 
-  This will recalculate the total number of CTF micrographs to be displayed. You may wish to complete this step where there are thousands of micrographs. Displaying all of them may require considerable processing time.
+  This will recalculate the total number of CTF micrographs and display them.
 
   ![Image of CTF Review filters](./images/reviewFiltered.png)
 
-  4. Click 'Review' to display the CTF micrographs.
-
   ![Image of CTF Review micrographs](./images/reviewCtfs.png)
 
-  5. For each CTF micrograph, the data can be viewed by clicking on the 'Data' button.
+  4. For each CTF micrograph, the data can be viewed by clicking on the 'Data' button.
 
   ![Image of CTF Data](./images/reviewData.png)
 
@@ -312,9 +291,9 @@ CTF Review allows the output from Gctf to be displayed, reviewed, filtered and s
 
   ![Image of CTF Review - input micrograph](./images/reviewRaw.png)
 
-  6. Repeat steps 3. and 4. until a list of desired micrographs is displayed.
+  5. Repeat step 3. until a list of desired micrographs is displayed.
 
-  7. When ready, clicking 'Save' creates a 'selected_micrographs_ctf.star' file inside the 'job' folder. This file can be used to continue processing inside Relion on the filtered micrographs.
+  6. When ready, clicking 'Save' creates a 'selected_micrographs_ctf.star' file inside the 'job' folder. This file can be used to continue processing inside Relion on the filtered micrographs.
 
 ```
 relionProjectDirectoryPath/NBCtfFind/ctf1/selected_micrographs_ctf.star
